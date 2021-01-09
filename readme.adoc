@@ -1,0 +1,175 @@
+= Java Web-Crawler
+
+This is a web crawling java library used to crawl a web domain and extract data from it pages.
+
+- Any HTML parser can be used and `Jsoup` and `Selenide` are included.
+- Supports depth and breadth traversal.
+- Assignable page processing through a page predicate.
+- A message-driven architecture for async page processing.
+- Assignable custom messages according page processing.
+- Maximum traversal depth limit.
+- Filtering of the circular links and skips their pages for processing.
+- Random delay in page processing.
+- Persisting page source on disk.
+- Backup in case of failure is supported.
+- `yml` and `Fluent API` configuration are supported.
+
+== Getting Start
+
+. compile the library
+
+    mvn clean install -DskipTests
+
+. add following dependency to your `pom` file
+[source,xml]
+<dependency>
+    <groupId>org.babich</groupId>
+    <artifactId>web-crawler</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+
+. example
+[source,java]
+----
+/**
+ * Finding all wiki pages by google search and extract their titles into PrintStream.
+ */
+public class WikiTitlesGrabber {
+
+    private PrintStream printStream = System.out;
+
+    public static void main(String[] args) {
+        WikiTitlesGrabber crawler = new WikiTitlesGrabber();
+        try {
+            String searchStr = args.length < 1 || StringUtils.isBlank(args[0])
+                    ? "web+crawler" : args[0];
+            crawler.findWikiPageAndGrabTitle(searchStr);
+        } catch (CrawlerConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * The custom message sent by the crawler when analyzing each wiki page.
+     */
+    public static class WikiProcessingMessage extends PageProcessingComplete {
+
+        //extracted wiki page titles
+        private final List<String> tocTitleList;
+
+        public WikiProcessingMessage(Page page) {
+            super(page);
+            this.tocTitleList = null == page.getPayload() ? Collections.emptyList()
+                    : (List<String>) page.getPayload();
+        }
+
+        public List<String> getTocTitleList() {
+            return Collections.unmodifiableList(tocTitleList);
+        }
+    }
+
+    /**
+     * subscriber method for receiving wiki page processing messages.
+     * @param message contains data extracted from the wiki page.
+     */
+    @Subscribe
+    public void OnWikiPageProcessed(WikiProcessingMessage message){
+        List<String> tocTitleList = message.getTocTitleList();
+        if(tocTitleList.isEmpty()){
+            return;
+        }
+        printStream.println(message.getPage().getPageUrl());
+        tocTitleList.forEach(title -> printStream.println("\t" + title));
+    }
+
+    /**
+     * Collecting titles on all wiki pages
+     * @param searchStr the string to be used by Google as the search string.
+     */
+    public void findWikiPageAndGrabTitle(String searchStr) throws CrawlerConfigurationException {
+        Predicate<Page> searchResultPage = page -> "landing page".equals(page.getPageName());
+        Predicate<Page> wikiPage = page -> page.getPageUrl().contains("wikipedia.org");
+
+        //configuring crawler
+        WebCrawler crawler = new WebCrawler.WebCrawlerBuilder("google")
+                .maxDepth(1)                            //how far to go from google search results page
+                .eventListeners(this)                   //an object containing subscriber methods
+                .startUrl("https://www.google.com/search?q=" + searchStr)
+
+                .withCustomPageProcessing(builder -> builder    //configuring search result processing
+                        .forPages(searchResultPage)             //only for search result page
+                        .processingBy(new DefaultJsoupPageProcessing() {
+                            /**
+                             * find in the results all links to the wikipedia.org resource
+                             */
+                            @Override
+                            protected Collection<String> findSuccessorLinks(Page page) {
+                                return doc.selectFirst("div#search").select("a[href*=wikipedia.org]")
+                                        .stream()
+                                        .map(element -> element.attr("abs:href"))
+                                        .collect(Collectors.toSet());
+                            }
+                        })
+                )
+                .withCustomPageProcessing(builder -> builder    //configuring wiki page processing
+                        .forPages(wikiPage)                     //only for wikipedia pages
+                        .sendMessage(WikiProcessingMessage::new)
+                        .processingBy(new DefaultJsoupPageProcessing() {
+                            /**
+                             *extracting the wiki page titles and putting them into the page payload
+                             *  as a serializable list
+                             */
+                            @Override
+                            protected void parse(Page page) {
+                                super.parse(page);
+                                ArrayList<String> tocTitleList = new ArrayList<>();
+                                doc.select("div#toc li").stream()
+                                        .map(Element::text)
+                                        .forEach(tocTitleList::add);
+                                page.setPayload(tocTitleList);
+                            }
+                        })
+                )
+                .build();
+
+        crawler.start();
+    }
+
+}
+----
+output
+
+    https://en.wikipedia.org/wiki/Web_crawler
+        1 Nomenclature
+        2 Overview
+        3 Crawling policy 3.1 Selection policy 3.1.1 Restricting followed links 3.1.2 URL normalization 3.1.3 Path-ascending crawling 3.1.4 Focused crawling 3.1.4.1 Academic-focused crawler 3.1.4.2 Semantic focused crawler 3.2 Re-visit policy 3.3 Politeness policy 3.4 Parallelization policy
+        3.1 Selection policy 3.1.1 Restricting followed links 3.1.2 URL normalization 3.1.3 Path-ascending crawling 3.1.4 Focused crawling 3.1.4.1 Academic-focused crawler 3.1.4.2 Semantic focused crawler
+        3.1.1 Restricting followed links
+        3.1.2 URL normalization
+        3.1.3 Path-ascending crawling
+        3.1.4 Focused crawling 3.1.4.1 Academic-focused crawler 3.1.4.2 Semantic focused crawler
+        3.1.4.1 Academic-focused crawler
+        3.1.4.2 Semantic focused crawler
+        3.2 Re-visit policy
+        3.3 Politeness policy
+        3.4 Parallelization policy
+        4 Architectures
+        5 Security
+        6 Crawler identification
+        7 Crawling the deep web 7.1 Web crawler bias
+        7.1 Web crawler bias
+        8 Visual vs programmatic crawlers
+        9 Examples 9.1 Open-source crawlers
+        9.1 Open-source crawlers
+        10 See also
+        11 References
+        12 Further reading
+    https://de.wikipedia.org/wiki/Webcrawler#Technik
+        1 Geschichte
+        2 Technik
+        3 Ausschluss von Webcrawlern
+        4 Probleme
+        5 Arten
+        6 Siehe auch
+        7 Einzelnachweise
+        8 Weblinks

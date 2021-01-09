@@ -1,0 +1,41 @@
+&ApplicationConfig
+
+delay: &Delay
+  min: 20
+  max: 20
+
+limit: &Limit
+  count: 50000
+  maxDepth: 10
+
+page: &PageConfig
+  landingPageName: 'landing page'
+  pageNamePattern: 'page_${number}'
+
+eventBus: &EventBus
+  !!org.babich.crawler.event.LocalEventBus { mode : 'SYNC' }
+
+traverser:
+  mode: BREADTH
+
+backupService: &BackupService
+  !!org.babich.crawler.interceptor.service.JdkSerializeBackupService { eventBus: *EventBus }
+
+processing:
+  defaultProcessing: !!org.babich.crawler.processing.DefaultJsoupPageProcessing { }
+  processingList:
+
+interceptorList:
+  - *BackupService
+  - &CircularLinksFilter !!org.babich.crawler.interceptor.filter.CircularLinksFilter { eventBus: *EventBus }
+  - &SuccessorsMessageProducer !!org.babich.crawler.interceptor.SuccessorsMessageProducer { eventBus: *EventBus }
+  - &SuccessorPagesPostProcessing !!org.babich.crawler.interceptor.service.SuccessorPagesPostProcessing { pageConfig: *PageConfig}
+  - !!org.babich.crawler.interceptor.filter.MaximumDepthFilter { limit: *Limit, eventBus: *EventBus }
+  - !!org.babich.crawler.interceptor.service.PageSourceLocalPersister { }
+  - !!org.babich.crawler.interceptor.service.PageProcessingDelay { delay: *Delay }
+
+eventListeners:
+  - *BackupService
+  - *CircularLinksFilter
+  - *SuccessorsMessageProducer
+  - *SuccessorPagesPostProcessing
