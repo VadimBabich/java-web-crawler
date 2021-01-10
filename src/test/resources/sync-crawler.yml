@@ -30,8 +30,8 @@ interceptorList:
   - &CircularLinksFilter !!org.babich.crawler.interceptor.filter.CircularLinksFilter { eventBus: *EventBus }
   - &SuccessorsMessageProducer !!org.babich.crawler.interceptor.SuccessorsMessageProducer { eventBus: *EventBus }
   - &SuccessorPagesPostProcessing !!org.babich.crawler.interceptor.service.SuccessorPagesPostProcessing { pageConfig: *PageConfig}
+  - &PageSourceLocalPersister !!org.babich.crawler.interceptor.service.PageSourceLocalPersister { }
   - !!org.babich.crawler.interceptor.filter.MaximumDepthFilter { limit: *Limit, eventBus: *EventBus }
-  - !!org.babich.crawler.interceptor.service.PageSourceLocalPersister { }
   - !!org.babich.crawler.interceptor.service.PageProcessingDelay { delay: *Delay }
 
 eventListeners:
@@ -39,3 +39,4 @@ eventListeners:
   - *CircularLinksFilter
   - *SuccessorsMessageProducer
   - *SuccessorPagesPostProcessing
+  - *PageSourceLocalPersister

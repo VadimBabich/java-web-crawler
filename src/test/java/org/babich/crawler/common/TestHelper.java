@@ -3,6 +3,10 @@
  */
 package org.babich.crawler.common;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,5 +29,18 @@ public class TestHelper {
                     .replace(matcher.start("host"), matcher.end("host"), replacement)
                     .toString();
         };
+    }
+
+    /**
+     * Converting a URI, represented as a string, to a file
+     * @param uriString URI represented as a string
+     * @return file
+     */
+    public static File toFile(String uriString){
+        try {
+            return Paths.get(new URI(uriString)).toFile();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

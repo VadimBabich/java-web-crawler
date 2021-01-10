@@ -7,6 +7,8 @@ import static com.codeborne.selenide.Selenide.$;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.google.common.io.Resources;
+import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +19,7 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import org.babich.crawler.WebCrawler.WebCrawlerBuilder;
 import org.babich.crawler.api.Page;
+import org.babich.crawler.api.messages.PageProcessingComplete;
 import org.babich.crawler.common.ProcessingMessageListener;
 import org.babich.crawler.common.TestHelper;
 import org.babich.crawler.configuration.exception.CrawlerConfigurationException;
@@ -140,6 +143,23 @@ class SelenidePageProcessingIT {
                 () -> Assert.assertThat(listener.getProcessed(), hasSize(5)),
                 () -> Assert.assertThat(listener.getSkipped(), hasSize(0))
         );
+
+        //page sources after a crawler crash should not be deleted
+        long countOfExistedPageSources = listener.getProcessed().stream()
+                .map(PageProcessingComplete::getPage)
+                .map(Page::getPageSource)
+                .map(SelenidePageProcessingIT::toFile)
+                .filter(File::exists)
+                .count();
+        Assert.assertEquals(3, countOfExistedPageSources);
+    }
+
+    public static File toFile(String uriString){
+        try {
+            return Paths.get(new URI(uriString)).toFile();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public static class LinkReplacementSelenidePageProcessing extends DefaultSelenidePageProcessing {
