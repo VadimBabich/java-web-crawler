@@ -19,6 +19,10 @@ import org.babich.crawler.api.messages.CrawlerStopped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The page source is saved to disk and the {@code Page#pageSource} value is replaced with the file path as a URI string.
+ * This is necessary to keep the Page object lightweight and portable.
+ */
 public class PageSourceLocalPersister implements PageProcessingInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -55,11 +59,23 @@ public class PageSourceLocalPersister implements PageProcessingInterceptor {
         return Files.write(newFilePath, page.getPageSource().getBytes());
     }
 
+    /**
+     * remove page sources from disk when the crawler is stopped.
+     */
     @Subscribe
     public void tearDown(CrawlerStopped message){
         File sourceDir = pageSourceDir.toFile();
-        if(sourceDir.exists()) {
-            FileUtils.deleteQuietly(pageSourceDir.toFile());
+        if(message.isAbnormal()){
+            logger.info("The crawler has crashed, the page sources have not been removed from the directory {}."
+                    , sourceDir);
+            return;
         }
+
+        if(sourceDir.exists() && FileUtils.deleteQuietly(pageSourceDir.toFile())) {
+            logger.debug("Page sources removed from the dir {}.", sourceDir);
+            return;
+        }
+
+        logger.error("Unable to remove page sources from directory {}.", sourceDir);
     }
 }
