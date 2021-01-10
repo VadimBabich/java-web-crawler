@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.hasSize;
 
 import com.google.common.io.Resources;
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -148,18 +147,10 @@ class SelenidePageProcessingIT {
         long countOfExistedPageSources = listener.getProcessed().stream()
                 .map(PageProcessingComplete::getPage)
                 .map(Page::getPageSource)
-                .map(SelenidePageProcessingIT::toFile)
+                .map(TestHelper::toFile)
                 .filter(File::exists)
                 .count();
         Assert.assertEquals(3, countOfExistedPageSources);
-    }
-
-    public static File toFile(String uriString){
-        try {
-            return Paths.get(new URI(uriString)).toFile();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 
     public static class LinkReplacementSelenidePageProcessing extends DefaultSelenidePageProcessing {
