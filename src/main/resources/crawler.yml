@@ -33,6 +33,7 @@ interceptorList:
   - &PageSourceLocalPersister !!org.babich.crawler.interceptor.service.PageSourceLocalPersister { }
   - !!org.babich.crawler.interceptor.filter.MaximumDepthFilter { limit: *Limit, eventBus: *EventBus }
   - !!org.babich.crawler.interceptor.service.PageProcessingDelay { delay: *Delay }
+  - !!org.babich.crawler.interceptor.service.PageUrlNormalizer { }
 
 eventListeners:
   - *BackupService
