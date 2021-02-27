@@ -39,4 +39,61 @@ class PageUrlNormalizerTest {
 
         Assert.assertEquals("http://example.com/foo/bar.html", page.getPageUrl());
     }
+
+    @Test
+    void givenUrlSchemeAndHostInUpperCaseWhenNormalizationThenSchemeAndHostToLowercaseInResult(){
+        PageContext context = Mockito.mock(PageContext.class);
+
+        Page page = new Page(new AtomicReference<>(context)
+                ,"test_crawler", "HTTP://User@Example.COM/Foo", "page_name");
+        underTest.beforeProcessing(page);
+
+        Assert.assertEquals("http://User@example.com/Foo", page.getPageUrl());
+    }
+
+    @Test
+    void givenUrlUnsortedQueryParametersWhenNormalizationThenSortedQueryParametersInResult(){
+        PageContext context = Mockito.mock(PageContext.class);
+
+        Page page = new Page(new AtomicReference<>(context)
+                ,"test_crawler", "http://example.com/display?lang=en&article=fred", "page_name");
+        underTest.beforeProcessing(page);
+
+        Assert.assertEquals("http://example.com/display?article=fred&lang=en", page.getPageUrl());
+    }
+
+    @Test
+    void givenUrlWithFragmentWhenNormalizationThenWithoutFragmentInResult(){
+        PageContext context = Mockito.mock(PageContext.class);
+
+        Page page = new Page(new AtomicReference<>(context)
+                ,"test_crawler", "http://example.com/bar.html#section1", "page_name");
+        underTest.beforeProcessing(page);
+
+        Assert.assertEquals("http://example.com/bar.html", page.getPageUrl());
+    }
+
+    @Test
+    void givenUrlWithDefaultPortWhenNormalizationThenWithoutPortInResult(){
+        PageContext context = Mockito.mock(PageContext.class);
+
+        Page page = new Page(new AtomicReference<>(context)
+                ,"test_crawler", "http://example.com:80/bar.html#section1", "page_name");
+        underTest.beforeProcessing(page);
+
+        Assert.assertEquals("http://example.com/bar.html", page.getPageUrl());
+    }
+
+    @Test
+    void givenUrlWithEmptyQueryParamsWhenNormalizationThenQueryMarkRemovedInResult(){
+        PageContext context = Mockito.mock(PageContext.class);
+
+        Page page = new Page(new AtomicReference<>(context)
+                ,"test_crawler", "http://example.com/display?", "page_name");
+        underTest.beforeProcessing(page);
+
+        Assert.assertEquals("http://example.com/display", page.getPageUrl());
+    }
+
+
 }
