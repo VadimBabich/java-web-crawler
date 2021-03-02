@@ -34,7 +34,7 @@ public class CircularLinksFilter implements PageProcessingInterceptor {
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE;
+        return Integer.MIN_VALUE + 100;
     }
 
     @Override
