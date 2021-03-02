@@ -35,7 +35,7 @@ public class PageFilterCombiner implements PageProcessingInterceptor {
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE + 100;
+        return 0;
     }
 
     @Override
