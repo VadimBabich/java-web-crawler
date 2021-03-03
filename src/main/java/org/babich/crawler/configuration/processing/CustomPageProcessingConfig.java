@@ -110,27 +110,45 @@ public class CustomPageProcessingConfig {
         }
     }
 
+    /**
+     * The matching tool, which is used in the page processing configuration,
+     * helps to categorize all found pages according to specific processing and message types.
+     */
     public static class Matchers{
 
         private Matchers() {
         }
 
+        /**
+         * Matching the entire page url to the provided regex
+         * @param regExp regular expression as string
+         * @return page predicate
+         */
         public static Predicate<Page> regexpPageUrlMatcher(String regExp) {
-            return page -> Pattern.compile(regExp)
-                    .matcher(page.getPageUrl())
+            Pattern pattern = Pattern.compile(regExp);
+            return page -> pattern.matcher(page.getPageUrl())
                     .matches();
         }
 
+        /**
+         * matching the hostname of the page url with the provided hostname regex
+         * @param hostName hostname regex for example: .*host.com
+         * @return page predicate
+         */
         public static Predicate<Page> hostNameMatcher(String hostName){
             return page -> {
                 try {
-                    return hostName.equalsIgnoreCase(new URL(page.getPageUrl()).getHost());
+                    return new URL(page.getPageUrl()).getHost().matches(hostName);
                 } catch (MalformedURLException e) {
                     return false;
                 }
             };
         }
 
+        /**
+         * always true predicate for any page
+         * @return page predicate
+         */
         public static Predicate<Page> alwaysTrue(){
             return page -> true;
         }
