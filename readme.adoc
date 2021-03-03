@@ -1,4 +1,4 @@
-:sourcedir: src/test/java
+:sourcedir: ./src/test/java
 
 = Java Web-Crawler
 
