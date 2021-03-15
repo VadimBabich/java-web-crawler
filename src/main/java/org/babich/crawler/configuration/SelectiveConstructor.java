@@ -4,17 +4,28 @@
 package org.babich.crawler.configuration;
 
 import com.google.common.collect.Sets;
+import com.google.common.io.Resources;
 import com.google.common.reflect.Reflection;
+
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.babich.crawler.configuration.exception.CrawlerConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.NodeId;
+import org.yaml.snakeyaml.representer.Representer;
 
 /**
  * This class is an extension to the yaml-engine and provides an approach to initializing an object of configuration
@@ -22,7 +33,7 @@ import org.yaml.snakeyaml.nodes.NodeId;
  */
 public class SelectiveConstructor extends Constructor {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(SelectiveConstructor.class);
 
     public SelectiveConstructor(String[] packageNames, Class<?>... classes) {
 
@@ -98,5 +109,41 @@ public class SelectiveConstructor extends Constructor {
     static Predicate<Class<?>> getPackageNamesPredicate(String[] packageNames) {
         Set<String> packageNameSet = Sets.newHashSet(packageNames);
         return aClass -> packageNameSet.contains(Reflection.getPackageName(aClass));
+    }
+
+    public static <T> T loadYmlConfiguration(Path configurationPath
+            , Class<T> configurationClass
+            , String[] packages
+            , Class<?> ...classes) throws CrawlerConfigurationException {
+
+        LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setAllowRecursiveKeys(true);
+
+        Yaml yaml = new Yaml(new SelectiveConstructor(packages, classes)
+                , new Representer()
+                , new DumperOptions()
+                , loaderOptions);
+
+        T config;
+        try {
+            URL url = null == configurationPath ? Resources.getResource("crawler.yml")
+                    : configurationPath.toUri().toURL();
+
+            logger.info("Crawler is launched with configuration from resource {}", url);
+            config = yaml.loadAs(Resources.toString(url, Charset.defaultCharset()), configurationClass);
+            logger.debug("Loaded configuration {}", config);
+
+        } catch (IOException e) {
+            throw new CrawlerConfigurationException(
+                    String.format("Exception occurred when loading crawler configuration from {%s}: "
+                            , configurationPath), e);
+        }
+
+        if (null == config) {
+            throw new CrawlerConfigurationException(String.format("Cannot load configuration from {%s}: "
+                    , configurationPath));
+        }
+
+        return config;
     }
 }
