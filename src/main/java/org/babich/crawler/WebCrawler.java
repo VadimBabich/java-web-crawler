@@ -4,29 +4,8 @@
 package org.babich.crawler;
 
 import com.google.common.graph.Traverser;
-import com.google.common.io.Resources;
 import com.google.common.reflect.Reflection;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageContext;
 import org.babich.crawler.api.PageProcessing;
@@ -52,10 +31,17 @@ import org.babich.crawler.interceptor.service.SuccessorPagesPostProcessing;
 import org.babich.crawler.processing.CombinePageProcessing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.representer.Representer;
+
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WebCrawler {
@@ -103,42 +89,18 @@ public class WebCrawler {
         return isActive.get();
     }
 
-    static ApplicationConfig loadYmlConfiguration(Path configurationPath) throws CrawlerConfigurationException {
 
-        LoaderOptions loaderOptions = new LoaderOptions();
-        loaderOptions.setAllowRecursiveKeys(true);
+    static ApplicationConfig loadYmlConfiguration(Path configurationPath) throws CrawlerConfigurationException {
 
         String[] packages = Stream.of(CombinePageProcessing.class, PageFilterCombiner.class,
                 SuccessorPagesPostProcessing.class, CustomMessagesDispatcher.class)
                 .map(Reflection::getPackageName)
                 .toArray(String[]::new);
 
-        Yaml yaml = new Yaml(new SelectiveConstructor(packages, LocalEventBus.class)
-                , new Representer()
-                , new DumperOptions()
-                , loaderOptions);
-
-        ApplicationConfig config;
-        try {
-            URL url = null == configurationPath ? Resources.getResource("crawler.yml")
-                    : configurationPath.toUri().toURL();
-
-            logger.info("Crawler is launched with configuration from resource {}", url);
-            config = yaml.loadAs(Resources.toString(url, Charset.defaultCharset()), ApplicationConfig.class);
-            logger.debug("Loaded configuration {}", config);
-
-        } catch (IOException e) {
-            throw new CrawlerConfigurationException(
-                    String.format("Exception occurred when loading crawler configuration from {%s}: "
-                            , configurationPath), e);
-        }
-
-        if (null == config) {
-            throw new CrawlerConfigurationException(String.format("Cannot load configuration from {%s}: "
-                    , configurationPath));
-        }
-
-        return config;
+        return SelectiveConstructor.loadYmlConfiguration(configurationPath
+                , ApplicationConfig.class
+                , packages
+                , LocalEventBus.class);
     }
 
     void setCustomerPageFilters(AssignedPageFilter... customPageFilters) {
