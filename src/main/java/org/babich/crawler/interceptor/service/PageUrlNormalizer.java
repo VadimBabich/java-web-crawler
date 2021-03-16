@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -51,7 +52,16 @@ public class PageUrlNormalizer implements PageProcessingInterceptor {
     }
 
     @Override
+    public void afterProcessing(Page page, List<Page> successorPages) {
+        successorPages.forEach(this::normalizeUrl);
+    }
+
+    @Override
     public void beforeProcessing(Page page) {
+        normalizeUrl(page);
+    }
+
+    protected void normalizeUrl(Page page)  {
         String pageUrl = page.getPageUrl();
         if (Strings.isNullOrEmpty(pageUrl)) {
             return;
