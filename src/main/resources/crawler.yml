@@ -1,8 +1,8 @@
 &ApplicationConfig
 
 delay: &Delay
-  min: 20
-  max: 20
+  min: 1200
+  max: 3000
 
 limit: &Limit
   count: 50000
