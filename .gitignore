@@ -1,0 +1,10 @@
+=======
+*.iml
+**/.idea
+/target
+/*/target
+/*/*/target
+
+# Mac
+.DS_Store
+/.flattened-pom.xml

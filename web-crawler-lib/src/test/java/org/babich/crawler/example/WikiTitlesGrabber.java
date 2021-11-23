@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.babich.crawler.WebCrawler;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.messages.PageProcessingComplete;
+import org.babich.crawler.configuration.ApplicationConfig;
 import org.babich.crawler.configuration.exception.CrawlerConfigurationException;
 import org.babich.crawler.configuration.processing.CustomPageProcessingConfig;
 import org.babich.crawler.processing.DefaultJsoupPageProcessing;
@@ -74,7 +75,6 @@ public class WikiTitlesGrabber {
      * @param searchStr the string to be used by Google as the search string.
      */
     public void findWikiPageAndGrabTitle(String searchStr) throws CrawlerConfigurationException {
-        Predicate<Page> searchResultPage = page -> "landing page".equals(page.getPageName());
 
         //configuring crawler
         WebCrawler crawler = new WebCrawler.WebCrawlerBuilder("google")
@@ -83,7 +83,7 @@ public class WikiTitlesGrabber {
                 .startUrl("https://www.google.com/search?q=" + searchStr)
 
                 .withCustomPageProcessing(builder -> builder    //configuring search result processing
-                        .forPages(searchResultPage)             //only for search result page
+                        .forPages(createGoogleSearchResultsPagePredicate(builder.getApplicationConfig()))   //only for search result page
                         .processingBy(new DefaultJsoupPageProcessing() {
                             /**
                              * find in the results all links to the wikipedia.org resource
@@ -122,4 +122,13 @@ public class WikiTitlesGrabber {
         crawler.start();
     }
 
+  /**
+   * Create predicate for google search results page
+   * @param applicationConfig has been loaded from yml.
+   * @return landing page predicate
+   */
+  private Predicate<Page> createGoogleSearchResultsPagePredicate(ApplicationConfig applicationConfig){
+    String landingPageName = applicationConfig.getPage().getLandingPageName();
+    return page -> landingPageName.equals(page.getPageName());
+  }
 }

@@ -75,9 +75,8 @@ class SelenidePageProcessingIT {
     @Test
     void shouldPassThroughEveryDomainResource_DefaultSelenidePageProcessing() throws CrawlerConfigurationException {
 
-        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary")
+        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
-                .configurationPath(configPath)
                 .eventListeners(listener)
                 .useDefaultPageProcessing(new LinkReplacementSelenidePageProcessing(containerHost))
                 .pageConsumer(visitedLinks::add)
@@ -99,10 +98,9 @@ class SelenidePageProcessingIT {
 
         Predicate<Page> errorPageFilter = page -> page.getPageName().contains("2");
 
-        final WebCrawler crashedCrawler = new WebCrawlerBuilder("dictionary")
+        final WebCrawler crashedCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
                 .eventListeners(listener)
-                .configurationPath(configPath)
                 .withCustomPageProcessing(builder -> builder
                         .forPages(errorPageFilter.negate())
                         .processingBy(new LinkReplacementSelenidePageProcessing(containerHost))
@@ -127,10 +125,9 @@ class SelenidePageProcessingIT {
                 () -> Assert.assertThat(listener.getProcessed(), hasSize(3))
         );
 
-        WebCrawler proceedingCrawler = new WebCrawlerBuilder("dictionary")
+        WebCrawler proceedingCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
                 .eventListeners(listener)
-                .configurationPath(configPath)
                 .useDefaultPageProcessing(new LinkReplacementSelenidePageProcessing(containerHost))
                 .pageConsumer(visitedLinks::add)
                 .build();

@@ -71,9 +71,8 @@ class JsoupPageProcessingIT {
     @Test
     void shouldPassThroughEveryDomainResource_DefaultJsoupPageProcessing() throws CrawlerConfigurationException {
 
-        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary")
+        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
-                .configurationPath(configPath)
                 .eventListeners(listener)
                 .withCustomPageProcessing(builder -> builder
                         .forPages(CustomPageProcessingConfig.Matchers.alwaysTrue())
@@ -99,11 +98,10 @@ class JsoupPageProcessingIT {
     void shouldPassThroughAllDomainResourcesLessThanFirstDepth_DefaultJsoupPageProcessing()
             throws CrawlerConfigurationException {
 
-        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary")
+        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
                 .maxDepth(1)
                 .eventListeners(listener)
-                .configurationPath(configPath)
                 .withCustomPageProcessing(builder -> builder
                         .forPages(CustomPageProcessingConfig.Matchers.alwaysTrue())
                         .processingBy(new LinkReplacementJsoupPageProcessing(containerHost))
@@ -130,10 +128,9 @@ class JsoupPageProcessingIT {
         Predicate<Page> errorPageFilter = page -> page.getPageName().contains("2");
         PageProcessing pageProcessing = new LinkReplacementJsoupPageProcessing(containerHost);
 
-        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary")
+        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
                 .eventListeners(listener)
-                .configurationPath(configPath)
                 .useDefaultPageProcessing(pageProcessing)
                 .withCustomPageProcessing(builder -> builder
                         .forPages(errorPageFilter)
@@ -190,9 +187,8 @@ class JsoupPageProcessingIT {
         expectedMap.put("Nachrichten", "a book of paper for writing on.");
         expectedMap.put("Technologien", "the methods for using scientific discoveries for practical purposes.");
 
-        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary")
+        WebCrawler webCrawler = new WebCrawlerBuilder("dictionary", configPath)
                 .startUrl("http://" + containerHost + "/landing.html")
-                .configurationPath(configPath)
                 .eventListeners(listener)
                 .withCustomPageProcessing(builder -> builder
                         .forPages(CustomPageProcessingConfig.Matchers.alwaysTrue())

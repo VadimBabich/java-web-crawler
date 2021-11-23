@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageProcessing;
 import org.babich.crawler.api.ProcessingMessage;
+import org.babich.crawler.configuration.ApplicationConfig;
 import org.babich.crawler.configuration.processing.CustomProcessingFilter.When;
 
 /**
@@ -64,6 +65,12 @@ public class CustomPageProcessingConfig {
         PageProcessing pageProcessing;
         CustomProcessingFilter filter;
 
+        private final ApplicationConfig applicationConfig;
+
+        public Builder(ApplicationConfig applicationConfig) {
+            this.applicationConfig = applicationConfig;
+        }
+
         /**
          * @param messageProducer a factory that produces a message object for the page being processed.
          */
@@ -107,6 +114,10 @@ public class CustomPageProcessingConfig {
             Verify.verifyNotNull(predicate, "predicate cannot be null.");
 
             return new CustomPageProcessingConfig(messageProducer, predicate, pageProcessing,  filter);
+        }
+
+        public ApplicationConfig getApplicationConfig() {
+            return applicationConfig;
         }
     }
 

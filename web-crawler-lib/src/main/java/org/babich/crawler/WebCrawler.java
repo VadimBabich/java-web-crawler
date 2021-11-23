@@ -276,7 +276,7 @@ public class WebCrawler {
 
         private Set<Object> eventListeners;
 
-        private Path configurationPath;
+        private ApplicationConfig config;
 
         private ApplicationConfig.Traverser.Mode mode;
 
@@ -284,12 +284,18 @@ public class WebCrawler {
 
         private PageProcessing defaultPageProcessing;
 
-        public WebCrawlerBuilder() {
-            this("default");
+        public WebCrawlerBuilder() throws CrawlerConfigurationException {
+            this("default", null);
         }
 
-        public WebCrawlerBuilder(String name) {
+        public WebCrawlerBuilder(String name) throws CrawlerConfigurationException {
+            this(name, null);
+        }
+
+        public WebCrawlerBuilder(String name, Path configurationPath)
+            throws CrawlerConfigurationException {
             this.name = name;
+            this.config = loadYmlConfiguration(configurationPath);
         }
 
         public WebCrawlerBuilder pageConsumer(Consumer<Page> pageConsumer) {
@@ -299,7 +305,7 @@ public class WebCrawler {
         }
 
         public WebCrawlerBuilder withCustomPageProcessing(Consumer<Builder> builder) {
-            Builder configBuilder = new Builder();
+            Builder configBuilder = new Builder(config);
             builder.accept(configBuilder);
 
             processingConfigList.add(configBuilder.build());
@@ -312,11 +318,6 @@ public class WebCrawler {
             }
 
             eventListeners = Arrays.stream(listeners).collect(Collectors.toSet());
-            return this;
-        }
-
-        public WebCrawlerBuilder configurationPath(Path configurationPath) {
-            this.configurationPath = configurationPath;
             return this;
         }
 
@@ -340,8 +341,7 @@ public class WebCrawler {
             return this;
         }
 
-        public WebCrawler build() throws CrawlerConfigurationException {
-            ApplicationConfig config = loadYmlConfiguration(configurationPath);
+        public WebCrawler build() {
 
             WebCrawler crawler = new WebCrawler(name, startUrl, config);
 
