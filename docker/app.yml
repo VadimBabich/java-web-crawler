@@ -1,0 +1,20 @@
+version: '3'
+services:
+  web-crawler-app:
+    image: ${USER}/web-crawler-test:latest
+    command:
+      [
+        '-outputFile',
+        '/var/app/data.txt',
+        '-searchStr',
+        'web+crawler',
+        '-configPath',
+        '/etc/app/custom-crawler-config.yml'
+      ]
+    volumes:
+      - ./app/tmp:/tmp:rw
+      - ./app/output:/var/app:rw
+      - ./app/config:/etc/app:ro
+
+
+
