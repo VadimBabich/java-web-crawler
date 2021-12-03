@@ -8,3 +8,4 @@
 # Mac
 .DS_Store
 /.flattened-pom.xml
+/build/

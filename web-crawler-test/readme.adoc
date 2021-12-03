@@ -1,0 +1,72 @@
+# Test Application
+
+The purpose of the Test Application is to showing how to use the crawler library. This simple application does a Google search for `web+crawler` and finds wiki pages in the results. It then grabs their headers, if any.
+
+The optional `-searchStr` argument can also be passed with a different value instead of `web+crawler`. This is configured in the `docker/app.yml` file.
+
+### Dockerize Application
+The application is dockerized at the end of the build cycle. To start building a docker image from the command line, run the maven plugin `dockerfile` as shown below:
+
+    mvn -pl web-crawler-test dockerfile:build
+
+Then the docker image have to be appeared at the local repository with the name `${env.USER}/web-crawler-test`. To show a list of local docker images, use the command below:
+
+```
+docker images
+
+REPOSITORY                               TAG            IMAGE ID       CREATED         SIZE
+${env.USER}/web-crawler-test             latest         f7d82d3c2aae   1 min ago      105MB
+```
+
+### Run with docker compose
+The `${project.basedir}/docker` folder contains the docker-compose configuration for running Test Application.
+
+* docker/app/config/custom-crawler-config.yml - is a custom crawler configuration.
+* docker/app/output/data.txt - this is a text file with crawling results.
+* docker/app/tmp - this folder contains temporary data (such as saved pages or recovery information from a scanner crash).
+
+To run the application, use the command below:
+
+    docker-compose -f ./docker/app.yml up
+
+And then check out the results
+```
+cat ./docker/app/output/data.txt
+
+https://de.wikipedia.org/wiki/Webcrawler
+        1 Geschichte
+        2 Technik
+        3 Ausschluss von Webcrawlern
+        4 Probleme
+        5 Arten
+        6 Siehe auch
+        7 Einzelnachweise
+        8 Weblinks
+https://en.wikipedia.org/wiki/Web_crawler
+        1 Nomenclature
+        2 Overview
+        3 Crawling policy 3.1 Selection policy 3.1.1 Restricting followed links 3.1.2 URL normalization 3.1.3 Path-ascending crawling 3.1.4 Focused crawling 3.1.4.1 Academic-focused crawler 3.1.4.2 Semantic focused crawler 3.2 Re-visit policy 3.3 Politeness policy 3.4 Parallelization policy
+        3.1 Selection policy 3.1.1 Restricting followed links 3.1.2 URL normalization 3.1.3 Path-ascending crawling 3.1.4 Focused crawling 3.1.4.1 Academic-focused crawler 3.1.4.2 Semantic focused crawler
+        3.1.1 Restricting followed links
+        3.1.2 URL normalization
+        3.1.3 Path-ascending crawling
+        3.1.4 Focused crawling 3.1.4.1 Academic-focused crawler 3.1.4.2 Semantic focused crawler
+        3.1.4.1 Academic-focused crawler
+        3.1.4.2 Semantic focused crawler
+        3.2 Re-visit policy
+        3.3 Politeness policy
+        3.4 Parallelization policy
+        4 Architectures
+        5 Security
+        6 Crawler identification
+        7 Crawling the deep web 7.1 Web crawler bias
+        7.1 Web crawler bias
+        8 Visual vs programmatic crawlers
+        9 List of web crawlers 9.1 Historical web crawlers 9.2 In-house web crawlers 9.3 Commercial web crawlers 9.4 Open-source crawlers
+        9.1 Historical web crawlers
+        9.2 In-house web crawlers
+        9.3 Commercial web crawlers
+        9.4 Open-source crawlers
+        10 See also
+        11 References
+        12 Further reading

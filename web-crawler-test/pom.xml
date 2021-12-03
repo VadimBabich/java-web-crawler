@@ -73,6 +73,16 @@
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
         <version>1.4.13</version>
+        <executions>
+          <execution>
+            <id>${project.version}</id>
+            <goals>
+              <goal>build</goal>
+              <goal>tag</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <dockerfile>${project.basedir}</dockerfile>
           <buildArgs>
@@ -80,6 +90,8 @@
               target/${project.artifactId}-${project.version}-jar-with-dependencies.jar
             </JAR_FILE>
           </buildArgs>
+          <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+          <tag>${project.version}</tag>
           <repository>${docker.image.prefix}/${project.artifactId}</repository>
         </configuration>
       </plugin>
