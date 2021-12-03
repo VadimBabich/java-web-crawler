@@ -16,6 +16,7 @@
 
   <properties>
     <docker.image.prefix>${env.USER}</docker.image.prefix>
+    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 
   <dependencies>

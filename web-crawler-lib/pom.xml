@@ -12,6 +12,13 @@
   <artifactId>web-crawler-lib</artifactId>
   <packaging>jar</packaging>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Vadim Babich Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/VadimBabich/java-web-crawler</url>
+    </repository>
+  </distributionManagement>
 
   <build>
     <plugins>
