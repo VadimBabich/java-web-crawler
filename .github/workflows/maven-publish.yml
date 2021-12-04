@@ -29,6 +29,14 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      run:  mvn -pl web-crawler-lib deploy -P github -s $GITHUB_WORKSPACE/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Publish to GitHub Packages Docker image
+      run: |
+        mvn -pl web-crawler-test docker:build -s $GITHUB_WORKSPACE/settings.xml
+        mvn -pl web-crawler-test docker:push -s $GITHUB_WORKSPACE/settings.xml
+
       env:
         GITHUB_TOKEN: ${{ github.token }}

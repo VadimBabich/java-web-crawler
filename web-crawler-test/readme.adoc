@@ -5,17 +5,17 @@ The purpose of the Test Application is to showing how to use the crawler library
 The optional `-searchStr` argument can also be passed with a different value instead of `web+crawler`. This is configured in the `docker/app.yml` file.
 
 ### Dockerize Application
-The application is dockerized at the end of the build cycle. To start building a docker image from the command line, run the maven plugin `dockerfile` as shown below:
+The application is dockerized at the end of the build cycle. To start building a docker image from the command line, run the maven plugin `com.spotify:docker-maven-plugin` as shown below:
 
-    mvn -pl web-crawler-test dockerfile:build
+    mvn -pl web-crawler-test docker:build
 
-Then the docker image have to be appeared at the local repository with the name `${env.USER}/web-crawler-test`. To show a list of local docker images, use the command below:
+Then the docker image have to be appeared at the local repository with the name `ghcr.io/vadimbabich/web-crawler-test`. To show a list of local docker images, use the command below:
 
 ```
 docker images
 
-REPOSITORY                               TAG            IMAGE ID       CREATED         SIZE
-${env.USER}/web-crawler-test             latest         f7d82d3c2aae   1 min ago      105MB
+REPOSITORY                               TAG            IMAGE ID       CREATED          SIZE
+ghcr.io/vadimbabich/web-crawler-test     latest         f7d82d3c2aae   19 seconds ago   105MB
 ```
 
 ### Run with docker compose

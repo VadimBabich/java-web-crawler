@@ -72,28 +72,30 @@
 
       <plugin>
         <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.4.13</version>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>1.2.2</version>
         <executions>
           <execution>
-            <id>${project.version}</id>
+            <id>build-image</id>
+            <phase>package</phase>
             <goals>
               <goal>build</goal>
-              <goal>tag</goal>
-              <goal>push</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <dockerfile>${project.basedir}</dockerfile>
+          <imageName>ghcr.io/vadimbabich/${project.artifactId}</imageName>
+          <imageTags>
+            <tag>${project.version}</tag>
+          </imageTags>
+          <dockerDirectory>${project.basedir}</dockerDirectory>
           <buildArgs>
             <JAR_FILE>
               target/${project.artifactId}-${project.version}-jar-with-dependencies.jar
             </JAR_FILE>
           </buildArgs>
-          <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-          <tag>${project.version}</tag>
-          <repository>${docker.image.prefix}/${project.artifactId}</repository>
+          <serverId>github</serverId>
+          <registryUrl>https://ghcr.io/vadimbabich</registryUrl>
         </configuration>
       </plugin>
 

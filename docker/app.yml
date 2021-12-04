@@ -1,7 +1,7 @@
 version: '3'
 services:
   web-crawler-app:
-    image: ${USER}/web-crawler-test:latest
+    image: ghcr.io/vadimbabich/web-crawler-test:latest
     command:
       [
         '-outputFile',
