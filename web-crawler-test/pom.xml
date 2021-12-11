@@ -17,6 +17,11 @@
   <properties>
     <docker.image.prefix>${env.USER}</docker.image.prefix>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <docker.image.prefix>vadimbabich</docker.image.prefix>
+    <docker.registry>ghcr.io/${docker.image.prefix}</docker.registry>
+    <docker.image>${docker.registry}/${project.artifactId}</docker.image>
+    <image.creation>USE_CURRENT_TIMESTAMP</image.creation>
+    <docker.tag>latest</docker.tag>
   </properties>
 
   <dependencies>
@@ -44,58 +49,31 @@
         <version>3.2.0</version>
       </plugin>
 
+      <!-- Jib is an open-source Java tool maintained by Google for building Docker images of Java applications.
+It simplifies containerization since with it, we don't need to write a dockerfile.-->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.1.4</version>
         <executions>
-
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <addClasspath>true</addClasspath>
-                  <mainClass>org.babich.crawler.test.DemoApp</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>1.2.2</version>
-        <executions>
-          <execution>
-            <id>build-image</id>
-            <phase>package</phase>
-            <goals>
-              <goal>build</goal>
+              <goal>dockerBuild</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <imageName>ghcr.io/vadimbabich/${project.artifactId}</imageName>
-          <imageTags>
-            <tag>${project.version}</tag>
-          </imageTags>
-          <dockerDirectory>${project.basedir}</dockerDirectory>
-          <buildArgs>
-            <JAR_FILE>
-              target/${project.artifactId}-${project.version}-jar-with-dependencies.jar
-            </JAR_FILE>
-          </buildArgs>
-          <serverId>github</serverId>
-          <registryUrl>https://ghcr.io/vadimbabich</registryUrl>
+          <from>
+            <image>openjdk:8-jre-alpine</image>
+          </from>
+          <to>
+            <image>${docker.image}</image>
+          </to>
+          <container>
+            <mainClass>org.babich.crawler.test.DemoApp</mainClass>
+            <creationTime>${image.creation}</creationTime>
+          </container>
         </configuration>
       </plugin>
 

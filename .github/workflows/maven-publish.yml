@@ -33,10 +33,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Publish to GitHub Packages Docker image
-      run: |
-        mvn -pl web-crawler-test docker:build -s $GITHUB_WORKSPACE/settings.xml
-        mvn -pl web-crawler-test docker:push -s $GITHUB_WORKSPACE/settings.xml
+    - name: Extract Maven project version
+      run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+      id: project
 
+    - name: Publish to GitHub Container Registry
+      if: success()
+      run: |
+        mvn -B install -pl web-crawler-lib -DskipTests -s $GITHUB_WORKSPACE/settings.xml
+        mvn -B -pl web-crawler-test jib:build -DskipTests -Ddocker.tag=${{ steps.project.outputs.version }} -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
