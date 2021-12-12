@@ -47,7 +47,7 @@
       <id>github</id>
       <distributionManagement>
         <repository>
-          <id>github</id>
+          <id>ghcr.io</id>
           <name>GitHub Vadim Babich Apache Maven Packages</name>
           <url>https://maven.pkg.github.com/VadimBabich/java-web-crawler</url>
         </repository>
