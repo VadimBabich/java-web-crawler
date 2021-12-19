@@ -22,6 +22,8 @@
     <docker.image>${docker.registry}/${project.artifactId}</docker.image>
     <image.creation>USE_CURRENT_TIMESTAMP</image.creation>
     <docker.tag>latest</docker.tag>
+    <!--  for apple silicone:  arm64    -->
+    <docker.platform.architecture>amd64</docker.platform.architecture>
   </properties>
 
   <dependencies>
@@ -66,6 +68,12 @@ It simplifies containerization since with it, we don't need to write a dockerfil
         <configuration>
           <from>
             <image>openjdk:8-jre-alpine</image>
+            <platforms>
+              <platform>
+                <architecture>${docker.platform.architecture}</architecture>
+                <os>linux</os>
+              </platform>
+            </platforms>
           </from>
           <to>
             <image>${docker.image}</image>
