@@ -28,9 +28,9 @@ TIP: Building docker image with `arm64` support use property `docker.platform.ar
 . add following dependency to your `pom` file
 [source,xml]
 <dependency>
-    <groupId>org.babich</groupId>
-    <artifactId>web-crawler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+  <groupId>org.babich</groupId>
+  <artifactId>web-crawler-lib</artifactId>
+  <version>1.0.1</version>
 </dependency>
 
 . example
