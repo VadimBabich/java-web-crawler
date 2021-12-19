@@ -1,4 +1,4 @@
-:sourcedir: ./src/test/java
+:sourcedir: ./web-crawler-lib/src/test/java
 
 = Java Web-Crawler
 
@@ -21,6 +21,9 @@ This is a web crawling java library used to crawl a web domain and extract data 
 . compile the library
 
     mvn clean install -DskipTests
+
+TIP: Building docker image with `arm64` support use property `docker.platform.architecture` as shown below: +
++mvn clean install -DskipTests -Ddocker.platform.architecture=arm64+
 
 . add following dependency to your `pom` file
 [source,xml]
