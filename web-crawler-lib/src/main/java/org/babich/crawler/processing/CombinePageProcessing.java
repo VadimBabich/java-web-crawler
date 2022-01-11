@@ -3,23 +3,25 @@
  */
 package org.babich.crawler.processing;
 
+import org.babich.crawler.api.Page;
+import org.babich.crawler.api.PageProcessing;
+import org.babich.crawler.api.processing.AssignedPageProcessing;
+import org.babich.crawler.configuration.exception.PreProcessingChainException;
+import org.babich.crawler.metrics.PageProcessingMetricsWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.babich.crawler.api.Page;
-import org.babich.crawler.api.PageProcessing;
-import org.babich.crawler.configuration.exception.PreProcessingChainException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class CombinePageProcessing<T extends PageProcessing & Predicate<Page>> implements PageProcessing {
+public class CombinePageProcessing<T extends AssignedPageProcessing> implements PageProcessing {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final List<T> pageProcessingFlow;
+    private final List<PageProcessingMetricsWrapper> pageProcessingFlow;
     private final PageProcessing defaultPageProcessing;
 
     @SafeVarargs
@@ -29,13 +31,18 @@ public class CombinePageProcessing<T extends PageProcessing & Predicate<Page>> i
         }
 
         this.pageProcessingFlow = null == pageProcessingFlow ? new LinkedList<>()
-                : Arrays.asList(pageProcessingFlow.clone());
-        this.defaultPageProcessing = defaultPageProcessing;
+                : wrap(pageProcessingFlow);
+        this.defaultPageProcessing = PageProcessingMetricsWrapper.of(defaultPageProcessing);
+    }
+
+    @SafeVarargs
+    final List<PageProcessingMetricsWrapper> wrap(T... pageProcessingFlow){
+        return Arrays.stream(pageProcessingFlow).map(PageProcessingMetricsWrapper::new).collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Page> process(Page page) {
-        Optional<T> flow = pageProcessingFlow.stream()
+        Optional<PageProcessingMetricsWrapper> flow = pageProcessingFlow.stream()
                 .filter(item -> item.test(page))
                 .findFirst();
 
@@ -53,4 +60,5 @@ public class CombinePageProcessing<T extends PageProcessing & Predicate<Page>> i
 
         return defaultPageProcessing.process(page);
     }
+
 }

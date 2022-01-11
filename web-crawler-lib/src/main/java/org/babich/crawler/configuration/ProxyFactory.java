@@ -5,6 +5,14 @@ package org.babich.crawler.configuration;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.Reflection;
+import org.babich.crawler.api.Page;
+import org.babich.crawler.api.PageProcessing;
+import org.babich.crawler.api.PageProcessingInterceptor;
+import org.babich.crawler.configuration.exception.PreProcessingChainException;
+import org.babich.crawler.metrics.PageProcessingInterceptorMetricsWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,14 +21,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import org.babich.crawler.api.Page;
-import org.babich.crawler.api.PageProcessingInterceptor;
-import org.babich.crawler.api.PageProcessing;
-
-import org.babich.crawler.configuration.exception.PreProcessingChainException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class configures the preprocessing hooks for the {@link PageProcessingInterceptor} interface.
@@ -70,6 +70,7 @@ public class ProxyFactory {
 
             this.interceptorsChain = interceptorsChain.stream()
                     .sorted(byOrder)
+                    .map(PageProcessingInterceptorMetricsWrapper::new)
                     .collect(Collectors.toCollection(Lists::newCopyOnWriteArrayList));
         }
 
@@ -84,7 +85,7 @@ public class ProxyFactory {
         }
     }
 
-    private static class ProcessingMethodInvocationHandler implements InvocationHandler {
+    private static class ProcessingMethodInvocationHandler implements InvocationHandler, PageProcessingInterceptor {
 
         final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -93,7 +94,7 @@ public class ProxyFactory {
         private final PageProcessingInterceptor interceptor;
 
         public ProcessingMethodInvocationHandler(Object delegate,
-                Predicate<Method> methodPredicate, PageProcessingInterceptor interceptor) {
+                                                 Predicate<Method> methodPredicate, PageProcessingInterceptor interceptor) {
             if (null == delegate) {
                 throw new IllegalArgumentException("delegate cannot be null.");
             }
@@ -118,13 +119,13 @@ public class ProxyFactory {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             try {
                 if (methodPredicate.test(method)) {
-                    interceptor.beforeProcessing((Page) args[0]);
+                    beforeProcessing((Page) args[0]);
                 }
 
                 Object value = method.invoke(delegate, args);
 
                 if (methodPredicate.test(method)) {
-                    interceptor.afterProcessing((Page) args[0], (List<Page>) value);
+                    afterProcessing((Page) args[0], (List<Page>) value);
                 }
 
                 return value;
@@ -140,6 +141,17 @@ public class ProxyFactory {
                 return Collections.emptyList();
             }
         }
+
+        @Override
+        public void beforeProcessing(Page page) {
+            interceptor.beforeProcessing(page);
+        }
+
+        @Override
+        public void afterProcessing(Page page, List<Page> successorPages) {
+            interceptor.afterProcessing(page, successorPages);
+        }
+
     }
 
 }

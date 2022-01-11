@@ -1,0 +1,782 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "interval": "",
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.2.6",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "heap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "G1 Old Gen"
+            }
+          ]
+        },
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "heap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "G1 Survivor Space"
+            }
+          ]
+        },
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "heap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "G1 Eden Space"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM heap usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:77",
+          "format": "bytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:78",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "interval": "",
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.2.6",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "nonheap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "CodeHeap 'non-nmethods'"
+            }
+          ]
+        },
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "nonheap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "CodeHeap 'non-profiled nmethods'"
+            }
+          ]
+        },
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "nonheap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "CodeHeap 'profiled nmethods'"
+            }
+          ]
+        },
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "D",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "nonheap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "Compressed Class Space"
+            }
+          ]
+        },
+        {
+          "alias": "[[tag_id]]",
+          "dimensions": {},
+          "expression": "",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "id"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "crawler_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "id": "",
+          "matchExact": true,
+          "measurement": "jvm_memory_used",
+          "metricName": "",
+          "namespace": "",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "E",
+          "region": "default",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "statistic": "Average",
+          "tags": [
+            {
+              "key": "area",
+              "operator": "=",
+              "value": "nonheap"
+            },
+            {
+              "condition": "AND",
+              "key": "id",
+              "operator": "=",
+              "value": "Metaspace"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM nonheap usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:160",
+          "format": "bytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:161",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "schemaVersion": 32,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-10m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "JVM",
+  "uid": "E02muIRMk",
+  "version": 2
+}

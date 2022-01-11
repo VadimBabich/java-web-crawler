@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web-crawler-app:
+    image: ghcr.io/vadimbabich/web-crawler-test:latest
+    depends_on:
+      - grafana
+    environment:
+      - APP_SLEEP=30
+    command:
+      [
+        '-outputFile',
+        '/var/app/data.txt',
+        '-searchStr',
+        'web+crawler',
+        '-configPath',
+        '/etc/app/custom-crawler-config.yml'
+      ]
+    volumes:
+      - ./app/tmp:/tmp:rw
+      - ./app/output:/var/app:rw
+      - ./app/config:/etc/app:ro
+
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - 127.0.0.1:8086:8086
+    environment:
+      - INFLUXDB_DB=crawler
+
+  grafana:
+    image: grafana/grafana:8.2.6
+    depends_on:
+      - influxdb
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    ports:
+      - 127.0.0.1:3000:3000
