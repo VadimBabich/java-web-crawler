@@ -18,12 +18,12 @@
     <docker.image.prefix>${env.USER}</docker.image.prefix>
     <maven.deploy.skip>true</maven.deploy.skip>
     <docker.image.prefix>vadimbabich</docker.image.prefix>
-    <docker.registry>ghcr.io/${docker.image.prefix}</docker.registry>
-    <docker.image>${docker.registry}/${project.artifactId}</docker.image>
-    <image.creation>USE_CURRENT_TIMESTAMP</image.creation>
+    <docker.registry>ghcr.io</docker.registry>
+    <docker.image>${docker.image.prefix}/${project.artifactId}</docker.image>
     <docker.tag>latest</docker.tag>
     <!--  for apple silicone:  arm64    -->
     <docker.platform.architecture>amd64</docker.platform.architecture>
+    <docker.time>USE_CURRENT_TIMESTAMP</docker.time>
   </properties>
 
   <dependencies>
@@ -76,12 +76,24 @@ It simplifies containerization since with it, we don't need to write a dockerfil
             </platforms>
           </from>
           <to>
-            <image>${docker.image}</image>
+            <image>${docker.registry}/${docker.image}:${docker.tag}</image>
           </to>
           <container>
-            <mainClass>org.babich.crawler.test.DemoApp</mainClass>
-            <creationTime>${image.creation}</creationTime>
+            <entrypoint>/bin/sh,/entrypoint.sh</entrypoint>
+            <environment>
+              <APP_SLEEP>0</APP_SLEEP>
+            </environment>
+            <creationTime>${docker.time}</creationTime>
           </container>
+          <extraDirectories>
+            <paths>src/main/docker/jib</paths>
+            <permissions>
+              <permission>
+                <file>/usr/local/bin/entrypoint.sh</file>
+                <mode>755</mode>
+              </permission>
+            </permissions>
+          </extraDirectories>
         </configuration>
       </plugin>
 

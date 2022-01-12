@@ -6,6 +6,9 @@ package org.babich.crawler;
 import com.google.common.graph.Traverser;
 import com.google.common.reflect.Reflection;
 import com.google.common.util.concurrent.MoreExecutors;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageContext;
 import org.babich.crawler.api.PageProcessing;
@@ -28,6 +31,7 @@ import org.babich.crawler.interceptor.CustomMessagesDispatcher;
 import org.babich.crawler.interceptor.DefaultMessageProducer;
 import org.babich.crawler.interceptor.filter.PageFilterCombiner;
 import org.babich.crawler.interceptor.service.SuccessorPagesPostProcessing;
+import org.babich.crawler.metrics.InfluxRegistry;
 import org.babich.crawler.processing.CombinePageProcessing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +46,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static org.babich.crawler.metrics.Utils.bindJVMMetrics;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WebCrawler {
@@ -93,7 +99,7 @@ public class WebCrawler {
     static ApplicationConfig loadYmlConfiguration(Path configurationPath) throws CrawlerConfigurationException {
 
         String[] packages = Stream.of(CombinePageProcessing.class, PageFilterCombiner.class,
-                SuccessorPagesPostProcessing.class, CustomMessagesDispatcher.class)
+                SuccessorPagesPostProcessing.class, CustomMessagesDispatcher.class, InfluxRegistry.class)
                 .map(Reflection::getPackageName)
                 .toArray(String[]::new);
 
@@ -206,7 +212,7 @@ public class WebCrawler {
                 collectionAsStream(processing.getProcessingList()))
                 .toArray(AssignedPageProcessing[]::new);
 
-        builder.pageProcessing(new CombinePageProcessing<>(processing.getDefaultProcessing(), pageProcessors));
+        builder.pageProcessing(new CombinePageProcessing(processing.getDefaultProcessing(), pageProcessors));
 
         if (0 == pageProcessors.length) {
             logger.debug("No page processors configured.");
@@ -355,7 +361,20 @@ public class WebCrawler {
             crawler.setCustomerPageFilters(getCustomPageProcessingFilter());
             crawler.setCustomerMessagesProducers(getCustomMessagesProducers());
 
+            setMetrics(crawler);
+
             return crawler;
+        }
+
+        private void setMetrics(WebCrawler crawler){
+            if(!config.getMetrics().getEnabled()) {
+                return;
+            }
+
+            MeterRegistry registry = Optional.ofNullable(config.getMetrics().getRegistry())
+                    .orElse(new SimpleMeterRegistry());
+            registry.config().commonTags("crawler.name", crawler.name);
+            Metrics.addRegistry(bindJVMMetrics(registry));
         }
 
         private void setMaxDepth(ApplicationConfig config) {

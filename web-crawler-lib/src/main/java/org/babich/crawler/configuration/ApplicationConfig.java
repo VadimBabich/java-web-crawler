@@ -7,6 +7,8 @@ package org.babich.crawler.configuration;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
+
+import io.micrometer.core.instrument.MeterRegistry;
 import org.babich.crawler.api.BackupService;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageProcessing;
@@ -43,6 +45,41 @@ public class ApplicationConfig {
     //Processing restrictions
     private Limit limit;
     private Traverser traverser;
+
+    private Metrics metrics = new Metrics();
+
+
+    /**
+     * This is a metrics configuration that provides the ability to override the registry of metrics.
+     */
+    public static class Metrics {
+        private MeterRegistry registry;
+        private Boolean enabled = true;
+
+        public MeterRegistry getRegistry() {
+            return registry;
+        }
+
+        public void setRegistry(MeterRegistry registry) {
+            this.registry = registry;
+        }
+
+        public Boolean getEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(Boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Metrics.class.getSimpleName() + "[", "]")
+                    .add("registry='" + registry + "'")
+                    .add("enabled='" + enabled + "'")
+                    .toString();
+        }
+    }
 
     /**
      * setting page attributes such as name
@@ -212,6 +249,14 @@ public class ApplicationConfig {
         }
     }
 
+    public Metrics getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(Metrics metrics) {
+        this.metrics = metrics;
+    }
+
     public PageConfig getPage() {
         return page;
     }
@@ -303,6 +348,7 @@ public class ApplicationConfig {
                 .add("page=" + page)
                 .add("limit=" + limit)
                 .add("traverser=" + traverser)
+                .add("metrics=" + metrics)
                 .toString();
     }
 }
