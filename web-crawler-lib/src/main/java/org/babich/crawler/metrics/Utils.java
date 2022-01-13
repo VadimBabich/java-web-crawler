@@ -48,8 +48,4 @@ public class Utils {
         return properties;
     }
 
-    public static Map<String, String> toImmutableMap(Properties properties){
-        //noinspection unchecked
-        return ImmutableMap.copyOf((Map)properties);
-    }
 }
