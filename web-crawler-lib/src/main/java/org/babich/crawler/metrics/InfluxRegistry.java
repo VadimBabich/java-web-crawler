@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.babich.crawler.metrics.Utils.*;
 
@@ -60,7 +60,7 @@ public class InfluxRegistry extends InfluxMeterRegistry {
 
     public InfluxRegistry(String propertyFile) {
         this(new InfluxConfig() {
-            final Map<String,String> properties = toImmutableMap(loadProperties(propertyFile));
+            final Properties properties = loadProperties(propertyFile);
 
             {
                 logger.info("Influxdb metrics properties: {} ", properties.toString());
@@ -68,12 +68,12 @@ public class InfluxRegistry extends InfluxMeterRegistry {
 
             @Override
             public String get(String key) {
-                return properties.get(key);
+                return properties.getProperty(key);
             }
 
             @Override
             public Duration step() {
-                return Optional.ofNullable(properties.get(prefix() + '.' + "step"))
+                return Optional.ofNullable(properties.getProperty(prefix() + '.' + "step"))
                         .map(value -> Duration.ofSeconds(Long.parseLong(value)))
                         .orElse(Duration.ofSeconds(1));
             }

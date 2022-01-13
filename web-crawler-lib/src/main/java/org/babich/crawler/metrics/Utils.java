@@ -1,6 +1,5 @@
 package org.babich.crawler.metrics;
 
-import com.google.common.collect.ImmutableMap;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
@@ -12,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -48,8 +46,4 @@ public class Utils {
         return properties;
     }
 
-    public static Map<String, String> toImmutableMap(Properties properties){
-        //noinspection unchecked
-        return ImmutableMap.copyOf((Map)properties);
-    }
 }
