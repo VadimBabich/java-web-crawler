@@ -7,7 +7,7 @@ import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageProcessing;
 import org.babich.crawler.api.processing.AssignedPageProcessing;
 import org.babich.crawler.configuration.exception.PreProcessingChainException;
-import org.babich.crawler.metrics.PageProcessingMetricsWrapper;
+import org.babich.crawler.metrics.PageProcessingMetricsProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class CombinePageProcessing<T extends AssignedPageProcessing> implements 
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final List<PageProcessingMetricsWrapper> pageProcessingFlow;
+    private final List<PageProcessingMetricsProducer> pageProcessingFlow;
     private final PageProcessing defaultPageProcessing;
 
     @SafeVarargs
@@ -32,17 +32,17 @@ public class CombinePageProcessing<T extends AssignedPageProcessing> implements 
 
         this.pageProcessingFlow = null == pageProcessingFlow ? new LinkedList<>()
                 : wrap(pageProcessingFlow);
-        this.defaultPageProcessing = PageProcessingMetricsWrapper.of(defaultPageProcessing);
+        this.defaultPageProcessing = PageProcessingMetricsProducer.of(defaultPageProcessing);
     }
 
     @SafeVarargs
-    final List<PageProcessingMetricsWrapper> wrap(T... pageProcessingFlow){
-        return Arrays.stream(pageProcessingFlow).map(PageProcessingMetricsWrapper::new).collect(Collectors.toList());
+    final List<PageProcessingMetricsProducer> wrap(T... pageProcessingFlow){
+        return Arrays.stream(pageProcessingFlow).map(PageProcessingMetricsProducer::new).collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Page> process(Page page) {
-        Optional<PageProcessingMetricsWrapper> flow = pageProcessingFlow.stream()
+        Optional<PageProcessingMetricsProducer> flow = pageProcessingFlow.stream()
                 .filter(item -> item.test(page))
                 .findFirst();
 

@@ -13,7 +13,7 @@ import org.babich.crawler.api.processing.AssignedPageProcessing;
  * This class collects a metric for page processing time.
  * The "class" tag is used to identify a particular type of page handler.
  */
-public class PageProcessingMetricsWrapper implements AssignedPageProcessing {
+public class PageProcessingMetricsProducer implements AssignedPageProcessing {
 
     private static final String DEFAULT_METRIC_NAME = "crawler.processing.duration";
 
@@ -21,8 +21,8 @@ public class PageProcessingMetricsWrapper implements AssignedPageProcessing {
     private final Timer timerProcess;
 
 
-    public static PageProcessingMetricsWrapper of(PageProcessing delegate){
-        return new PageProcessingMetricsWrapper(new DefaultPageProcessingPredicate(){
+    public static PageProcessingMetricsProducer of(PageProcessing delegate){
+        return new PageProcessingMetricsProducer(new DefaultPageProcessingPredicate(){
             @Override
             public Iterable<Page> process(Page page) {
                 return delegate.process(page);
@@ -30,11 +30,11 @@ public class PageProcessingMetricsWrapper implements AssignedPageProcessing {
         }, DEFAULT_METRIC_NAME, "class", Utils.getClassName(delegate.getClass()));
     }
 
-    public PageProcessingMetricsWrapper(AssignedPageProcessing delegate) {
+    public PageProcessingMetricsProducer(AssignedPageProcessing delegate) {
         this(delegate, DEFAULT_METRIC_NAME, "class", Utils.getClassName(delegate.getClass()));
     }
 
-    public PageProcessingMetricsWrapper(AssignedPageProcessing delegate, String metricName, String... tags) {
+    public PageProcessingMetricsProducer(AssignedPageProcessing delegate, String metricName, String... tags) {
         this.delegate = delegate;
         this.timerProcess = Metrics.timer(metricName, tags);
     }

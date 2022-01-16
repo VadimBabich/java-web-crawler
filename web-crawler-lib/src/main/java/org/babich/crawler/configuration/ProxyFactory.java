@@ -9,7 +9,7 @@ import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageProcessing;
 import org.babich.crawler.api.PageProcessingInterceptor;
 import org.babich.crawler.configuration.exception.PreProcessingChainException;
-import org.babich.crawler.metrics.PageProcessingInterceptorMetricsWrapper;
+import org.babich.crawler.metrics.PageProcessingServiceMetricsProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ public class ProxyFactory {
 
             this.interceptorsChain = interceptorsChain.stream()
                     .sorted(byOrder)
-                    .map(PageProcessingInterceptorMetricsWrapper::new)
+                    .map(PageProcessingServiceMetricsProducer::new)
                     .collect(Collectors.toCollection(Lists::newCopyOnWriteArrayList));
         }
 

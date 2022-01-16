@@ -79,16 +79,14 @@ output
 === Monitoring and metrics
 
 The library provides metrics for processing pages, services and events. Metrics can be collected in an `Influxdb` and visualized with `Grafana`. An example of deploying a test-application with monitoring is in
-xref:web-crawler-test/src/main/docker/app.yml[]
+xref:web-crawler-test/src/main/docker/monitoring.yml[]
 [source,yml]
 ----
-include::web-crawler-test/src/main/docker/app.yml[]
+include::web-crawler-test/src/main/docker/monitoring.yml[]
 ----
-`Grafana` dashboards for `Influxdb` datasource are also available in the test-application.
+`Grafana` dashboards for `Influxdb` datasource are also available in the test-application environment.
 
-image::doc/img/pic_processing_metrics.png[caption="http://localhost:3000 " title="Pages processing - rate, duration and size"]
-
-image::doc/img/pic_services_metrics.png[caption="http://localhost:3000 " title="Services (interceptors) - rate and duration"]
+image::doc/img/summary_metrics.png[caption="http://localhost:3000 - " title="Summary of all available crawlers"]
 You can use a properties file to configure the database connection and registry settings. The file path can be passed to the class constructor, or a default value can be used for the local database instance.
 The configuration via the `crawler.yml` file looks like this:
 
