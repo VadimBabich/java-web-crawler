@@ -17,18 +17,18 @@ import static org.babich.crawler.metrics.Utils.getClassName;
  * Each service could implement the "beforeProcessing" and "afterProcessing" methods,
  * the "method" tag is used to identify specific method.
  */
-public class PageProcessingInterceptorMetricsWrapper implements PageProcessingInterceptor {
+public class PageProcessingServiceMetricsProducer implements PageProcessingInterceptor {
 
     private final Timer timerBeforeProcessing;
     private final Timer timerAfterProcessing;
     private final PageProcessingInterceptor delegate;
 
 
-    public PageProcessingInterceptorMetricsWrapper(PageProcessingInterceptor delegate) {
+    public PageProcessingServiceMetricsProducer(PageProcessingInterceptor delegate) {
         this(delegate, "crawler.processing.service.duration", getClassName(delegate.getClass()));
     }
 
-    public PageProcessingInterceptorMetricsWrapper(PageProcessingInterceptor delegate, String metricName, String tag) {
+    public PageProcessingServiceMetricsProducer(PageProcessingInterceptor delegate, String metricName, String tag) {
         this.delegate = delegate;
         this.timerBeforeProcessing = Metrics.timer(metricName, "class", tag, "method", "beforeProcessing");
         this.timerAfterProcessing = Metrics.timer(metricName, "class", tag, "method", "afterProcessing");

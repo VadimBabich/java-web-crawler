@@ -26,25 +26,31 @@ datasources:
     # <string> database name, if used
     database: crawler
     # <bool> enable/disable basic auth
-    basicAuth: false
+    basicAuth: true
     # <string> basic auth username
-    basicAuthUser: admin
+    basicAuthUser: readwrite-user
     # <string> basic auth password
-    basicAuthPassword: admin
+    basicAuthPassword: secureP@ssw0rd
     # <bool> enable/disable with credentials headers
     withCredentials:
     # <bool> mark as default datasource. Max one per org
     isDefault: true
     # <map> fields that will be converted to json and stored in json_data
     jsonData:
-      graphiteVersion: '1.1'
+      version: Flux
+      organization: my-org
+      defaultBucket: micrometer
+#      graphiteVersion: '1.1'
       tlsAuth: false
       tlsAuthWithCACert: false
     # <string> json object of data that will be encrypted.
     secureJsonData:
+      token: Iou3WHVaKQdmVEsUtZniWMruRShepsJ7eZyN
       tlsCACert: '...'
       tlsClientCert: '...'
       tlsClientKey: '...'
+    secureJsonFields:
+      token: true
     version: 1
     # <bool> allow users to edit datasources from the UI.
     editable: true
