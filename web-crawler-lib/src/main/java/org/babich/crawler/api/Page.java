@@ -32,18 +32,21 @@ public class Page implements Serializable{
     private int delay;
     //this is the depth of the loading graph from the landing page to the current one
     private int depth;
+    //data size of the page source
+    private long size;
     //any serializable data that can be assigned to this page
     private Serializable payload;
 
 
     public Page(AtomicReference<PageContext> pageContextRef, String crawlerName, String pageUrl, String name) {
-        this(pageContextRef, crawlerName, pageUrl, name, StringUtils.EMPTY, 0, 0, null);
+        this(pageContextRef, crawlerName, pageUrl, name, StringUtils.EMPTY, 0, 0, 0, null);
     }
 
     public Page(AtomicReference<PageContext> pageContextRef, String crawlerName, String pageUrl, String name,
             String pageSource,
             int delay,
             int depth,
+            long size,
             Serializable payload) {
         this.pageContextRef = pageContextRef;
         this.crawlerName = crawlerName;
@@ -52,6 +55,7 @@ public class Page implements Serializable{
         this.delay = delay;
         this.pageName = name;
         this.depth = depth;
+        this.size = size;
         this.payload = payload;
     }
 
@@ -63,6 +67,7 @@ public class Page implements Serializable{
         this.pageSource = page.pageSource;
         this.delay = page.delay;
         this.depth = page.depth;
+        this.size = page.size;
         this.payload = page.payload;
     }
 
@@ -142,6 +147,14 @@ public class Page implements Serializable{
 
     public Serializable getPayload() {
         return payload;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 
     public void setPayload(Serializable payload) {
