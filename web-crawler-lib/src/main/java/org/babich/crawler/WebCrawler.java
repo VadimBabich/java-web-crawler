@@ -6,9 +6,6 @@ package org.babich.crawler;
 import com.google.common.graph.Traverser;
 import com.google.common.reflect.Reflection;
 import com.google.common.util.concurrent.MoreExecutors;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageContext;
 import org.babich.crawler.api.PageProcessing;
@@ -47,7 +44,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.babich.crawler.metrics.Utils.bindJVMMetrics;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WebCrawler {
@@ -361,20 +357,7 @@ public class WebCrawler {
             crawler.setCustomerPageFilters(getCustomPageProcessingFilter());
             crawler.setCustomerMessagesProducers(getCustomMessagesProducers());
 
-            setMetrics(crawler);
-
             return crawler;
-        }
-
-        private void setMetrics(WebCrawler crawler){
-            if(!config.getMetrics().getEnabled()) {
-                return;
-            }
-
-            MeterRegistry registry = Optional.ofNullable(config.getMetrics().getRegistry())
-                    .orElse(new SimpleMeterRegistry());
-            registry.config().commonTags("crawler.name", crawler.name);
-            Metrics.addRegistry(bindJVMMetrics(registry));
         }
 
         private void setMaxDepth(ApplicationConfig config) {

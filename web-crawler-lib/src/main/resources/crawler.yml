@@ -15,6 +15,10 @@ page: &PageConfig
 eventBus: &EventBus
   !!org.babich.crawler.metrics.EventBusWithMetricsExtension { mode : 'ASYNC' }
 
+metrics: &Metrics
+  registry: !!io.micrometer.core.instrument.simple.SimpleMeterRegistry { }
+#  registry: !!org.babich.crawler.metrics.InfluxRegistry { propertyFile : './web-crawler-lib/src/main/resources/influx.properties' }
+
 traverser:
   mode: BREADTH
 
@@ -33,6 +37,7 @@ interceptorList:
   - &PageSourceLocalPersister !!org.babich.crawler.interceptor.service.PageSourceLocalPersister { }
   - !!org.babich.crawler.interceptor.filter.MaximumDepthFilter { limit: *Limit, eventBus: *EventBus }
   - !!org.babich.crawler.interceptor.service.PageProcessingDelay { delay: *Delay }
+  - !!org.babich.crawler.interceptor.service.PageSizeInitializer { }
   - !!org.babich.crawler.interceptor.service.PageUrlNormalizer { }
 
 eventListeners:
@@ -41,8 +46,5 @@ eventListeners:
   - *SuccessorsMessageProducer
   - *SuccessorPagesPostProcessing
   - *PageSourceLocalPersister
+  - !!org.babich.crawler.metrics.MeterRegistryInitializer { config: *Metrics }
   - !!org.babich.crawler.metrics.PageMetricsProducer { }
-
-metrics: &Metrics
-  registry: !!io.micrometer.core.instrument.simple.SimpleMeterRegistry { }
-#  registry: !!org.babich.crawler.metrics.InfluxRegistry { propertyFile : './web-crawler-lib/src/main/resources/influx.properties' }

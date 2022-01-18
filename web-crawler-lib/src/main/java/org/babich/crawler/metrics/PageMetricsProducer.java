@@ -7,10 +7,8 @@ import com.google.common.eventbus.Subscribe;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Metrics;
-import org.apache.commons.lang3.StringUtils;
 import org.babich.crawler.api.messages.PageProcessingComplete;
 import org.babich.crawler.api.messages.PageProcessingSkippe;
-
 
 /**
  * <p>This class collects a metric for the size of loaded pages.</p>
@@ -20,14 +18,16 @@ import org.babich.crawler.api.messages.PageProcessingSkippe;
  *     interceptorList:
  *       - *BackupService
  *       ...
- *       - !!org.babich.crawler.metrics.PageMetricsInterceptor { }
+ *       - !!org.babich.crawler.metrics.PageMetricsProducer { }
  * }</pre>
  */
+
 public class PageMetricsProducer {
 
     private final DistributionSummary pageSizeSummary;
     private final Counter skippedPageCounter;
     private final Counter completedPageCounter;
+
 
     public PageMetricsProducer() {
         this.pageSizeSummary = DistributionSummary
@@ -47,12 +47,6 @@ public class PageMetricsProducer {
     @Subscribe
     public void OnProcess(PageProcessingComplete message){
         completedPageCounter.increment();
-
-        String pageSource = message.getPage().getPageSource();
-        if (StringUtils.isBlank(pageSource)) {
-            pageSizeSummary.record(0);
-            return;
-        }
-        pageSizeSummary.record(pageSource.getBytes().length);
+        pageSizeSummary.record(message.getPage().getSize());
     }
 }

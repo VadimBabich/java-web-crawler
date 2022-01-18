@@ -23,7 +23,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1642351144745,
+  "iteration": 1642500408191,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -48,6 +48,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -89,7 +90,7 @@
       "pluginVersion": "8.2.6",
       "targets": [
         {
-          "query": "from(bucket: \"micrometer\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")\n|> count(column: \"_value\")",
+          "query": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n|> last()\n|> limit(n:1)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")\n|> group(columns: [])\n|> reduce(\n    fn: (r, accumulator) => ({ count: accumulator.count + 1 }),\n    identity: {count: 0}\n)",
           "refId": "A"
         }
       ],
@@ -106,6 +107,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -147,7 +149,7 @@
       "pluginVersion": "8.2.6",
       "targets": [
         {
-          "query": "from(bucket: \"micrometer\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_skipped_count\" and\n    r._field == \"value\"\n  )\n  |> last()\n  |> limit(n:1)\n  |> sum(column: \"_value\")",
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_skipped_count\" and\n    r._field == \"value\"\n  )\n  |> group(columns: [\"_measurement\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n  |> cumulativeSum()\n  |> last()",
           "refId": "A"
         }
       ],
@@ -164,6 +166,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -193,7 +196,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -204,11 +207,12 @@
       "pluginVersion": "8.2.6",
       "targets": [
         {
-          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_size\" and\n    r._field == \"sum\"\n  )\n  |> group(columns: [\"crawler_name\"])\n  |> keep(columns: [\"_time\",\"crawler_name\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: false)",
+          "hide": false,
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_size\" and\n    r._field == \"sum\"\n  )\n  |> group(columns: [\"crawler_name\"])\n  |> keep(columns: [\"_time\",\"crawler_name\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n",
           "refId": "A"
         }
       ],
-      "title": "Data",
+      "title": "Downloaded data size",
       "transparent": true,
       "type": "bargauge"
     },
@@ -221,6 +225,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -262,11 +267,11 @@
       "pluginVersion": "8.2.6",
       "targets": [
         {
-          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_completed_count\" and\n    r._field == \"value\"\n  )\n  |> last()\n  |> limit(n:1)\n  |> sum(column: \"_value\")",
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_completed_count\" and\n    r._field == \"value\"\n  )\n  |> group(columns: [\"_measurement\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n  |> cumulativeSum()\n  |> last()",
           "refId": "A"
         }
       ],
-      "title": "Total page completed",
+      "title": "Total pages loaded",
       "transparent": true,
       "type": "stat"
     },
@@ -403,7 +408,7 @@
               }
             ]
           },
-          "unit": "deckbytes"
+          "unit": "decbytes"
         },
         "overrides": []
       },
@@ -447,8 +452,67 @@
       },
       "id": 14,
       "panels": [],
-      "title": "Page processing",
+      "title": "Page processing ${Crawler}",
       "type": "row"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 18
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.2.6",
+      "targets": [
+        {
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_completed_count\" and\n    r._field == \"value\"\n  )\n  |> filter(fn: (r) => r.crawler_name == \"${Crawler}\")\n  |> group(columns: [\"_measurement\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n  |> cumulativeSum()\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Pages loaded",
+      "transparent": true,
+      "type": "stat"
     },
     {
       "datasource": null,
@@ -487,9 +551,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
+        "h": 9,
+        "w": 11,
+        "x": 3,
         "y": 18
       },
       "id": 18,
@@ -568,9 +632,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
+        "h": 9,
+        "w": 10,
+        "x": 14,
         "y": 18
       },
       "id": 16,
@@ -595,17 +659,135 @@
       "type": "timeseries"
     },
     {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 21
+      },
+      "id": 34,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.2.6",
+      "targets": [
+        {
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_size\" and\n    r._field == \"sum\"\n  )\n  |> filter(fn: (r) => r.crawler_name == \"${Crawler}\")\n  |> group(columns: [\"crawler_name\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)",
+          "refId": "A"
+        }
+      ],
+      "title": "Downloaded data",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 24
+      },
+      "id": 38,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.2.6",
+      "targets": [
+        {
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_skipped_count\" and\n    r._field == \"value\"\n  )\n  |> filter(fn: (r) => r.crawler_name == \"${Crawler}\")\n  |> group(columns: [\"_measurement\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n  |> cumulativeSum()\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Skipped url",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 27
       },
       "id": 8,
       "panels": [],
-      "title": "Event Bus",
+      "title": "Event Bus ${Crawler}",
       "type": "row"
     },
     {
@@ -673,7 +855,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "id": 10,
       "options": {
@@ -752,13 +934,38 @@
           },
           "unit": "s"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "OffersProcessingMessage"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 27
+        "y": 28
       },
       "id": 12,
       "options": {
@@ -790,11 +997,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 36
       },
       "id": 4,
       "panels": [],
-      "title": "Services",
+      "title": "Services ${Crawler}",
       "type": "row"
     },
     {
@@ -831,38 +1038,13 @@
           },
           "unit": "cps"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "CustomMessagesDispatcher"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 37
       },
       "id": 2,
       "options": {
@@ -937,13 +1119,38 @@
           },
           "unit": "ms"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "PageSourceLocalPersister"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 37
       },
       "id": 6,
       "options": {
@@ -1022,9 +1229,10 @@
       {
         "allValue": null,
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "google",
-          "value": "google"
+          "text": "None",
+          "value": ""
         },
         "datasource": null,
         "definition": "from(bucket: \"micrometer\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")",

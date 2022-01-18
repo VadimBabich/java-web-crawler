@@ -87,19 +87,22 @@ include::web-crawler-test/src/main/docker/monitoring.yml[]
 `Grafana` dashboards for `Influxdb` datasource are also available in the test-application environment.
 
 image::doc/img/summary_metrics.png[caption="http://localhost:3000 - " title="Summary of all available crawlers"]
-You can use a properties file to configure the database connection and registry settings. The file path can be passed to the class constructor, or a default value can be used for the local database instance.
+You can use a properties file to configure the database connection and registry settings. The path to file should be passed to the class constructor, or a default value could be used for the local database instance.
 The configuration via the `crawler.yml` file looks like this:
 
 [source,yml]
 ----
-  metrics: &Metrics
-      registry: !!org.babich.crawler.metrics.InfluxRegistry { propertyFile : './web-crawler-lib/src/main/resources/influx.properties' }
+metrics: &Metrics
+    registry: !!org.babich.crawler.metrics.InfluxRegistry { propertyFile : './web-crawler-lib/src/main/resources/influx.properties' }
 ----
 
-The property file influx.properties looks like this:
+The content of property file `influx.properties` looks like below:
 [source,properties]
 ----
-        influx.db=crawler
-        influx.uri=http://influxdb:8086
-        influx.step=1
+influx.db=crawler
+influx.uri=http://influxdb:8086
+influx.step=15
+influx.bucket=micrometer
+influx.org=my-org
+influx.token=Iou3WHVaKQdmVEsUtZniWMruRShepsJ7eZyN
 ----
