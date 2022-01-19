@@ -22,8 +22,8 @@
   "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1642500408191,
+  "id": 1,
+  "iteration": 1642608199531,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -66,7 +66,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 5,
         "w": 3,
         "x": 0,
         "y": 1
@@ -120,21 +120,19 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "decbytes"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 4,
         "x": 3,
         "y": 1
       },
-      "id": 28,
+      "id": 40,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -143,19 +141,20 @@
           "fields": "",
           "values": false
         },
-        "text": {},
-        "textMode": "auto"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
       },
       "pluginVersion": "8.2.6",
       "targets": [
         {
-          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_skipped_count\" and\n    r._field == \"value\"\n  )\n  |> group(columns: [\"_measurement\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n  |> cumulativeSum()\n  |> last()",
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_size\" and\n    r._field == \"sum\"\n  )\n  |> group(columns: [ ])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, period: 1m, fn: sum, createEmpty: true)\n",
           "refId": "A"
         }
       ],
-      "title": "Total skipped url",
+      "title": "Download Avg (1m)",
       "transparent": true,
-      "type": "stat"
+      "type": "gauge"
     },
     {
       "datasource": null,
@@ -185,7 +184,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 17,
         "x": 7,
         "y": 1
@@ -244,9 +243,68 @@
       },
       "gridPos": {
         "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 6
+      },
+      "id": 28,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.2.6",
+      "targets": [
+        {
+          "query": "from(bucket: \"${Bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"crawler_processing_page_skipped_count\" and\n    r._field == \"value\"\n  )\n  |> group(columns: [\"_measurement\"])\n  |> keep(columns: [\"_time\",\"_value\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: true)\n  |> cumulativeSum()\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Total skipped url",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
         "w": 4,
         "x": 3,
-        "y": 5
+        "y": 6
       },
       "id": 30,
       "options": {
@@ -327,13 +385,38 @@
           },
           "unit": "cps"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "hamburg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 10
       },
       "id": 22,
       "options": {
@@ -416,7 +499,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 10
       },
       "id": 24,
       "options": {
@@ -448,7 +531,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "id": 14,
       "panels": [],
@@ -485,7 +568,7 @@
         "h": 3,
         "w": 3,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "id": 36,
       "options": {
@@ -554,7 +637,7 @@
         "h": 9,
         "w": 11,
         "x": 3,
-        "y": 18
+        "y": 19
       },
       "id": 18,
       "options": {
@@ -629,13 +712,38 @@
           },
           "unit": "ms"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "AssignedPageProcessing"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 9,
         "w": 10,
         "x": 14,
-        "y": 18
+        "y": 19
       },
       "id": 16,
       "options": {
@@ -689,7 +797,7 @@
         "h": 3,
         "w": 3,
         "x": 0,
-        "y": 21
+        "y": 22
       },
       "id": 34,
       "options": {
@@ -747,7 +855,7 @@
         "h": 3,
         "w": 3,
         "x": 0,
-        "y": 24
+        "y": 25
       },
       "id": 38,
       "options": {
@@ -783,7 +891,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "id": 8,
       "panels": [],
@@ -855,7 +963,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 29
       },
       "id": 10,
       "options": {
@@ -965,7 +1073,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 29
       },
       "id": 12,
       "options": {
@@ -997,7 +1105,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 37
       },
       "id": 4,
       "panels": [],
@@ -1044,7 +1152,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 38
       },
       "id": 2,
       "options": {
@@ -1150,7 +1258,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 38
       },
       "id": 6,
       "options": {
@@ -1234,8 +1342,8 @@
           "text": "None",
           "value": ""
         },
-        "datasource": null,
-        "definition": "from(bucket: \"micrometer\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")",
+        "datasource": "${dsCrawler}",
+        "definition": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")\n|> keep(columns: [\"_value\"]) ",
         "description": null,
         "error": null,
         "hide": 0,
@@ -1244,7 +1352,7 @@
         "multi": false,
         "name": "Crawler",
         "options": [],
-        "query": "from(bucket: \"micrometer\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")",
+        "query": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")\n|> keep(columns: [\"_value\"]) ",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
