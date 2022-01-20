@@ -78,7 +78,7 @@ output
 
 === Monitoring and metrics
 
-The library provides metrics for processing pages, services and events. Metrics can be collected in an `Influxdb` and visualized with `Grafana`. An example of deploying a test-application with monitoring is in
+The library exposes metrics for processing pages, services and events. Metrics can be collected in an `Influxdb` and visualized with `Grafana`. An example of deploying a test-application with monitoring is in
 xref:web-crawler-test/src/main/docker/monitoring.yml[]
 [source,yml]
 ----
