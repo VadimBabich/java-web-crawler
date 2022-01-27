@@ -31,8 +31,8 @@ import org.babich.crawler.common.TestProcessingMessage;
 import org.babich.crawler.configuration.exception.CrawlerConfigurationException;
 import org.babich.crawler.configuration.processing.CustomPageProcessingConfig;
 import org.babich.crawler.processing.DefaultJsoupPageProcessing;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsMapContaining;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -87,9 +87,9 @@ class JsoupPageProcessingIT {
         webCrawler.start();
 
         Assertions.assertAll(
-                () -> Assert.assertThat(visitedLinks, hasSize(5)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(5)),
-                () -> Assert.assertThat(listener.getSkipped(), hasSize(0))
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getSkipped(), hasSize(0))
         );
     }
 
@@ -115,9 +115,9 @@ class JsoupPageProcessingIT {
         webCrawler.start();
 
         Assertions.assertAll(
-                () -> Assert.assertThat(visitedLinks, hasSize(5)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(4)),
-                () -> Assert.assertThat(listener.getSkipped(), hasSize(1))
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(4)),
+                () -> MatcherAssert.assertThat(listener.getSkipped(), hasSize(1))
         );
     }
 
@@ -143,9 +143,9 @@ class JsoupPageProcessingIT {
         webCrawler.start();
 
         Assertions.assertAll(
-                () -> Assert.assertThat(visitedLinks, hasSize(5)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(4)),
-                () -> Assert.assertThat(listener.getTestMessages(), hasSize(1))
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(4)),
+                () -> MatcherAssert.assertThat(listener.getTestMessages(), hasSize(1))
         );
     }
 
@@ -166,12 +166,12 @@ class JsoupPageProcessingIT {
                 .until(listener::getCrawlerStops, hasSize(1));
 
         Assertions.assertAll(
-                () -> Assert.assertThat(listener.getCrawlerStarts(), hasSize(1)),
-                () -> Assert.assertThat(visitedLinks, hasSize(5)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(5)),
-                () -> Assert.assertThat(listener.getSuccessorsProcessingCompletes(), hasSize(2)),
-                () -> Assert.assertThat(listener.getTestMessages(), hasSize(0)),
-                () -> Assert.assertThat(listener.getSkipped(), hasSize(0))
+                () -> MatcherAssert.assertThat(listener.getCrawlerStarts(), hasSize(1)),
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getSuccessorsProcessingCompletes(), hasSize(2)),
+                () -> MatcherAssert.assertThat(listener.getTestMessages(), hasSize(0)),
+                () -> MatcherAssert.assertThat(listener.getSkipped(), hasSize(0))
         );
     }
 
@@ -206,18 +206,18 @@ class JsoupPageProcessingIT {
 
         webCrawler.start();
 
-        Assert.assertThat(visitedLinks, hasSize(5));
+        MatcherAssert.assertThat(visitedLinks, hasSize(5));
         Map<String, String> extractedData = visitedLinks.stream()
                 .map(Page::getPayload)
                 .map(Pair.class::cast)
                 .collect(Collectors.toMap(pair -> (String) pair.getKey(), pair -> (String) pair.getValue()));
 
-        extractedData.forEach((k, v) -> Assert.assertThat(expectedMap, IsMapContaining.hasEntry(k, v)));
+        extractedData.forEach((k, v) -> MatcherAssert.assertThat(expectedMap, IsMapContaining.hasEntry(k, v)));
 
-        Assert.assertThat(listener.getTestMessages(), hasSize(5));
+        MatcherAssert.assertThat(listener.getTestMessages(), hasSize(5));
         listener.getTestMessages().stream()
                 .map(TestProcessingMessage::getPayload)
-                .forEach(pair -> Assert.assertThat(expectedMap
+                .forEach(pair -> MatcherAssert.assertThat(expectedMap
                         , IsMapContaining.hasEntry(pair.getKey(), pair.getValue())));
     }
 
