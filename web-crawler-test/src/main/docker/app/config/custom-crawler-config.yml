@@ -49,3 +49,4 @@ eventListeners:
   - *PageSourceLocalPersister
   - !!org.babich.crawler.metrics.MeterRegistryInitializer { config: *Metrics }
   - !!org.babich.crawler.metrics.PageMetricsProducer { }
+  - !!org.babich.crawler.interceptor.service.S3PageSourceExporter { propertyFile : '/etc/app/aws.properties' }

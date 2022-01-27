@@ -23,12 +23,11 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1642696197307,
+  "iteration": 1642608199531,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -37,7 +36,6 @@
         "y": 0
       },
       "id": 20,
-      "panels": [],
       "title": "Summary",
       "type": "row"
     },
@@ -341,11 +339,35 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
-            "align": "left",
-            "displayMode": "auto"
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -361,52 +383,63 @@
               }
             ]
           },
-          "unit": "ms"
+          "unit": "cps"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "hamburg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
-        "w": 7,
+        "w": 12,
         "x": 0,
         "y": 10
       },
-      "id": 42,
+      "id": 22,
       "options": {
-        "showHeader": true
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
       },
-      "pluginVersion": "8.2.6",
       "targets": [
         {
-          "query": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => r._measurement == \"process_uptime\" and r._field == \"value\")\n|> last()\n|> limit(n:1)\n|> group(columns: [\"_measurement\" ])\n|> keep(columns: [\"_time\",\"crawler_name\",\"_value\"]) ",
+          "query": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => r._measurement == \"crawler_processing_duration\" and r._field == \"count\")\n|> group(columns: [\"_measurement\", \"crawler_name\", \"class\"])\n|> keep(columns: [\"_time\",\"crawler_name\",\"_value\"]) \n|> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: false)\n|> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
-      "title": "Running crawlers",
-      "transformations": [
-        {
-          "id": "seriesToRows",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "indexByName": {
-              "_time": 0,
-              "_value": 2,
-              "crawler_name": 1
-            },
-            "renameByName": {
-              "_time": "Time",
-              "_value": "Uptime",
-              "crawler_name": "Crawler"
-            }
-          }
-        }
-      ],
+      "title": "Crawlers page processing rate",
       "transparent": true,
-      "type": "table"
+      "type": "timeseries"
     },
     {
       "datasource": null,
@@ -464,8 +497,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 17,
-        "x": 7,
+        "w": 12,
+        "x": 12,
         "y": 10
       },
       "id": 24,
@@ -483,7 +516,7 @@
       },
       "targets": [
         {
-          "query": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => r._measurement == \"crawler_processing_page_size\" and r._field == \"sum\")\n|> group(columns: [\"_measurement\", \"crawler_name\"])\n|> keep(columns: [\"_time\",\"crawler_name\",\"_value\"]) \n|> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n|> yield(name: \"mean\")",
+          "query": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> filter(fn: (r) => r._measurement == \"crawler_processing_page_size\" and r._field == \"sum\")\n|> group(columns: [\"_measurement\", \"crawler_name\", \"class\"])\n|> keep(columns: [\"_time\",\"crawler_name\",\"_value\"]) \n|> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n|> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -1192,7 +1225,7 @@
               }
             ]
           },
-          "unit": "ms"
+          "unit": "s"
         },
         "overrides": [
           {
@@ -1304,9 +1337,10 @@
       {
         "allValue": null,
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "bayern",
-          "value": "bayern"
+          "text": "None",
+          "value": ""
         },
         "datasource": "${dsCrawler}",
         "definition": "from(bucket: \"${Bucket}\")\n|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n|> group(columns: [\"crawler_name\"])\n|> keep(columns: [\"crawler_name\"]) \n|> distinct(column: \"crawler_name\")\n|> keep(columns: [\"_value\"]) ",

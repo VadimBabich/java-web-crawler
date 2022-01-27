@@ -17,7 +17,7 @@ public class PageSizeInitializer implements PageProcessingInterceptor {
 
     final int order = Integer.MIN_VALUE + 100;
 
-    PageSizeInitializer() {
+    public PageSizeInitializer() {
     }
 
     @Override

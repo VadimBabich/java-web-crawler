@@ -24,12 +24,12 @@ public class ProcessingMessageListener {
 
 
     @Subscribe
-    public void OnTest(TestProcessingMessage message) {
+    public void onTest(TestProcessingMessage message) {
         testProcessingMessage.add(message);
     }
 
     @Subscribe
-    public void OnProcess(PageProcessingComplete message) {
+    public void onProcess(PageProcessingComplete message) {
         processedPagesMessages.add(message);
     }
 

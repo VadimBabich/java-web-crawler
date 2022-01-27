@@ -23,6 +23,7 @@ import org.babich.crawler.common.ProcessingMessageListener;
 import org.babich.crawler.common.TestHelper;
 import org.babich.crawler.configuration.exception.CrawlerConfigurationException;
 import org.babich.crawler.processing.DefaultSelenidePageProcessing;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,9 +86,9 @@ class SelenidePageProcessingIT {
         webCrawler.start();
 
         Assertions.assertAll(
-                () -> Assert.assertThat(visitedLinks, hasSize(5)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(5)),
-                () -> Assert.assertThat(listener.getSkipped(), hasSize(0))
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getSkipped(), hasSize(0))
         );
     }
 
@@ -121,8 +122,8 @@ class SelenidePageProcessingIT {
         Assertions.assertThrows(Throwable.class, crashedCrawler::start);
 
         Assertions.assertAll(
-                () -> Assert.assertThat(visitedLinks, hasSize(3)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(3))
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(3)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(3))
         );
 
         WebCrawler proceedingCrawler = new WebCrawlerBuilder("dictionary", configPath)
@@ -135,9 +136,9 @@ class SelenidePageProcessingIT {
         proceedingCrawler.start();
 
         Assertions.assertAll(
-                () -> Assert.assertThat(visitedLinks, hasSize(5)),
-                () -> Assert.assertThat(listener.getProcessed(), hasSize(5)),
-                () -> Assert.assertThat(listener.getSkipped(), hasSize(0))
+                () -> MatcherAssert.assertThat(visitedLinks, hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getProcessed(), hasSize(5)),
+                () -> MatcherAssert.assertThat(listener.getSkipped(), hasSize(0))
         );
 
         //page sources after a crawler crash should not be deleted
@@ -147,7 +148,7 @@ class SelenidePageProcessingIT {
                 .map(TestHelper::toFile)
                 .filter(File::exists)
                 .count();
-        Assert.assertEquals(3, countOfExistedPageSources);
+        Assertions.assertEquals(3, countOfExistedPageSources);
     }
 
     public static class LinkReplacementSelenidePageProcessing extends DefaultSelenidePageProcessing {
