@@ -71,7 +71,7 @@ public class SelectiveConstructor extends Constructor {
                 return newInstanceBy(nodeType, arguments);
             } catch (ReflectiveOperationException exception) {
                 logger.error("Unable to parse yml config node {}"
-                        , node);
+                        , node, exception);
                 return super.constructJavaBean2ndStep(node, object);
             }
         }

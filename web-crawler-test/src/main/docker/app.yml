@@ -3,10 +3,8 @@ version: '3.8'
 services:
   web-crawler-app:
     image: ghcr.io/vadimbabich/web-crawler-test:latest
-    depends_on:
-      - grafana
     environment:
-      - APP_SLEEP=30
+      - APP_SLEEP=3
     command:
       [
         '-outputFile',

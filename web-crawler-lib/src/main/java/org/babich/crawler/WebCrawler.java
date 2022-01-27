@@ -24,6 +24,7 @@ import org.babich.crawler.configuration.processing.CustomPageProcessingConfig;
 import org.babich.crawler.configuration.processing.CustomPageProcessingConfig.Builder;
 import org.babich.crawler.configuration.processing.CustomProcessingFilter;
 import org.babich.crawler.event.LocalEventBus;
+import org.babich.crawler.exporters.S3PageSourceExporter;
 import org.babich.crawler.interceptor.CustomMessagesDispatcher;
 import org.babich.crawler.interceptor.DefaultMessageProducer;
 import org.babich.crawler.interceptor.filter.PageFilterCombiner;
@@ -94,7 +95,7 @@ public class WebCrawler {
 
     static ApplicationConfig loadYmlConfiguration(Path configurationPath) throws CrawlerConfigurationException {
 
-        String[] packages = Stream.of(CombinePageProcessing.class, PageFilterCombiner.class,
+        String[] packages = Stream.of(CombinePageProcessing.class, PageFilterCombiner.class, S3PageSourceExporter.class,
                 SuccessorPagesPostProcessing.class, CustomMessagesDispatcher.class, InfluxRegistry.class)
                 .map(Reflection::getPackageName)
                 .toArray(String[]::new);

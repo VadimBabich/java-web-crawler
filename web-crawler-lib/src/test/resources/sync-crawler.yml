@@ -47,4 +47,4 @@ eventListeners:
   - *PageSourceLocalPersister
   - !!org.babich.crawler.metrics.MeterRegistryInitializer { config: *Metrics }
   - !!org.babich.crawler.metrics.PageMetricsProducer { }
-#  - !!org.babich.crawler.interceptor.service.S3PageSourceExporter { propertyFile : './web-crawler-lib/src/main/resources/aws.properties' }
+#  - !!org.babich.crawler.exporters.S3PageSourceExporter { propertyFile : './web-crawler-lib/src/main/resources/aws.properties' }
