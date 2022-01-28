@@ -1,7 +1,7 @@
 /*
  * @author Vadim Babich
  */
-package org.babich.crawler.interceptor.service;
+package org.babich.crawler.exporters;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -42,7 +42,7 @@ import static org.babich.crawler.metrics.Utils.loadProperties;
  * <pre>
  * eventListeners:
  *     ...
- *   - !!org.babich.crawler.interceptor.service.S3PageSourceExporter { propertyFile : './web-crawler-lib/src/main/resources/aws.properties' }
+ *   - !!org.babich.crawler.exporters.S3PageSourceExporter { propertyFile : './web-crawler-lib/src/main/resources/aws.properties' }
  * </pre>
  *
  * aws.properties content:
@@ -64,8 +64,6 @@ public class S3PageSourceExporter {
 
     private String crawlerName = "none";
     private String keyName;
-
-    private String propertyFile;
 
 
     interface RegistryConfig {
@@ -145,16 +143,12 @@ public class S3PageSourceExporter {
             }
         };
 
-        s3Client = init(this.config);
-        setPropertyFile(propertyFile);
-    }
-
-    public String getPropertyFile() {
-        return propertyFile;
-    }
-
-    public void setPropertyFile(String propertyFile) {
-        this.propertyFile = propertyFile;
+        try {
+            s3Client = init(this.config);
+        }catch (Exception e){
+            logger.error("S3 page source exported cannot be initialized", e);
+            throw e;
+        }
     }
 
     private AmazonS3 init(S3ExporterConfig config) {

@@ -10,6 +10,7 @@ import com.google.common.io.Resources;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +21,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.awaitility.Duration;
 import org.babich.crawler.WebCrawler.WebCrawlerBuilder;
 import org.babich.crawler.api.Page;
 import org.babich.crawler.api.PageProcessing;
@@ -162,7 +162,7 @@ class JsoupPageProcessingIT {
 
         webCrawler.start();
 
-        await().atMost(Duration.TEN_SECONDS)
+        await().atMost(Duration.ofSeconds(10))
                 .until(listener::getCrawlerStops, hasSize(1));
 
         Assertions.assertAll(

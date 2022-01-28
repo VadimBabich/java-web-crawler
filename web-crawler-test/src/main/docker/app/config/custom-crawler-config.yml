@@ -39,7 +39,6 @@ interceptorList:
   - !!org.babich.crawler.interceptor.service.PageProcessingDelay { delay: *Delay }
   - !!org.babich.crawler.interceptor.service.PageSizeInitializer { }
   - !!org.babich.crawler.interceptor.service.PageUrlNormalizer { }
-  - !!org.babich.crawler.metrics.PageMetricsInterceptor { }
 
 eventListeners:
   - *BackupService
@@ -49,4 +48,4 @@ eventListeners:
   - *PageSourceLocalPersister
   - !!org.babich.crawler.metrics.MeterRegistryInitializer { config: *Metrics }
   - !!org.babich.crawler.metrics.PageMetricsProducer { }
-  - !!org.babich.crawler.interceptor.service.S3PageSourceExporter { propertyFile : '/etc/app/aws.properties' }
+  - !!org.babich.crawler.exporters.S3PageSourceExporter { propertyFile : '/etc/app/aws.properties' }
