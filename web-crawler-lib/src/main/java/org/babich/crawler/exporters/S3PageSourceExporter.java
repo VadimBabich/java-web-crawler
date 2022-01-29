@@ -201,15 +201,15 @@ public class S3PageSourceExporter {
             logger.debug("Uploading a new object to S3 from a file. {}", file.getAbsolutePath());
         }
 
-        executeRequest(() ->
-                s3Client.putObject(
-                        new PutObjectRequest(config.getBucketName(), getKeyNameFor(file), file)
-                )
-        );
+        PutObjectRequest request = new PutObjectRequest(config.getBucketName()
+                , getKeyNameFor(file)
+                , file);
+
+        executeRequest(() -> s3Client.putObject(request));
     }
 
     private String getKeyNameFor(File file) {
-        return keyName + KEY_DELIMITER + file.getName() + ".src";
+        return keyName + KEY_DELIMITER + file.getName();
     }
 
     private void createBucketIfNecessary() {

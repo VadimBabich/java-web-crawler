@@ -55,7 +55,7 @@ public class PageSourceLocalPersister implements PageProcessingInterceptor {
     }
 
     private Path save(Page page) throws IOException {
-        Path newFilePath = Files.createTempFile(pageSourceDir, page.getPageName(), StringUtils.EMPTY);
+        Path newFilePath = Files.createTempFile(pageSourceDir, page.getPageName(), ".html");
         return Files.write(newFilePath, page.getPageSource().getBytes());
     }
 

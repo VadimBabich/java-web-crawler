@@ -9,7 +9,7 @@ x-minio-common: &minio-common
     - "9001"
   environment:
     MINIO_COMPRESS: on
-    MINIO_COMPRESS_EXTENSIONS: ".src,.txt,.log,.csv,.json,.tar,.xml,.bin,.pdf,.doc"
+    MINIO_COMPRESS_EXTENSIONS: ".html,.txt,.log,.csv,.json,.tar,.xml,.bin,.pdf,.doc"
     MINIO_COMPRESS_MIME_TYPES: "text/*,application/json,application/xml,application/pdf"
     MINIO_ROOT_USER: minio
     MINIO_ROOT_PASSWORD: minio123
