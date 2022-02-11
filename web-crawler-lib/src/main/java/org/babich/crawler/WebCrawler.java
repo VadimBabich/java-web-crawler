@@ -138,9 +138,10 @@ public class WebCrawler {
     }
 
     private Collection<Page> getStartPages(PageContext pageContext) {
-        Collection<Page> startPages = applicationConfig.getBackupService().restoreFor(pageContext);
-        if (!startPages.isEmpty()) {
-            return startPages;
+        Optional<Collection<Page>> startPages = Optional.ofNullable(applicationConfig.getBackupService())
+                .map(service -> service.restoreFor(pageContext));
+        if (startPages.isPresent() && !startPages.get().isEmpty()) {
+            return startPages.get();
         }
 
         return Collections.singleton(new Page(new AtomicReference<>(pageContext)

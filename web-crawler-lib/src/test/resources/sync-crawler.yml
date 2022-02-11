@@ -11,6 +11,8 @@ limit: &Limit
 page: &PageConfig
   landingPageName: 'landing page'
   pageNamePattern: 'page_${number}'
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'
+  preLoad: true
 
 eventBus: &EventBus
   !!org.babich.crawler.metrics.EventBusWithMetricsExtension { mode : 'SYNC' }
@@ -38,6 +40,7 @@ interceptorList:
   - !!org.babich.crawler.interceptor.service.PageProcessingDelay { delay: *Delay }
   - !!org.babich.crawler.interceptor.service.PageSizeInitializer { }
   - !!org.babich.crawler.interceptor.service.PageUrlNormalizer { }
+  - !!org.babich.crawler.interceptor.service.PageSourcePreloader { config: *PageConfig, capacity: 30 }
 
 eventListeners:
   - *BackupService
