@@ -88,6 +88,8 @@ public class ApplicationConfig {
 
         private String landingPageName;
         private String pageNamePattern;
+        private String userAgent;
+        private Boolean preLoad;
 
         public String getLandingPageName() {
             return landingPageName;
@@ -105,11 +107,29 @@ public class ApplicationConfig {
             this.pageNamePattern = pageNamePattern;
         }
 
+        public String getUserAgent() {
+            return userAgent;
+        }
+
+        public void setUserAgent(String userAgent) {
+            this.userAgent = userAgent;
+        }
+
+        public Boolean getPreLoad() {
+            return preLoad;
+        }
+
+        public void setPreLoad(Boolean preLoad) {
+            this.preLoad = preLoad;
+        }
+
         @Override
         public String toString() {
             return new StringJoiner(", ", PageConfig.class.getSimpleName() + "[", "]")
                     .add("landingPageName='" + landingPageName + "'")
                     .add("pageNamePattern='" + pageNamePattern + "'")
+                    .add("userAgent='" + userAgent + "'")
+                    .add("preLoad='" + preLoad + "'")
                     .toString();
         }
     }

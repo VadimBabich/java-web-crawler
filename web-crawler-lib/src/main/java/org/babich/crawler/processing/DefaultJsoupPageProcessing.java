@@ -13,6 +13,7 @@ import org.babich.crawler.api.Page;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +25,12 @@ public class DefaultJsoupPageProcessing extends AbstractPageProcessing {
     @Override
     protected void parse(Page page) {
         try {
-            doc = Jsoup.connect(page.getPageUrl()).get();
-            page.setPageSource(doc.html());
+            if(StringUtils.isBlank(page.getPageSource())) {
+                doc = Jsoup.connect(page.getPageUrl()).get();
+                page.setPageSource(doc.html());
+            } else {
+                doc = Parser.parse(page.getPageSource(), page.getPageUrl());
+            }
         } catch (IOException exception) {
             logger.error("Unable to parse page by url {} ", page.getPageUrl());
             throw new UncheckedIOException(exception);
